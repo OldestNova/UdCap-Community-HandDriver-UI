@@ -1,0 +1,3 @@
+[submodule "udcap-community-handdriver-core"]
+	path = udcap-community-handdriver-core
+	url = git@github.com:OldestNova/UdCap-Community-HandDriver-Core.git

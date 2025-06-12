@@ -4,37 +4,14 @@
 
 #ifndef MAIN_H
 #define MAIN_H
-#include "wx/wxprec.h"
 
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif
-
-class UdCapCommunityDriverUI: public wxApp {
-public:
-    virtual bool OnInit() override;
-};
-//
-// class UdCapCommunityDriverMainFrame: public wxFrame {
-// public:
-//     UdCapCommunityDriverMainFrame();
-//     virtual ~UdCapCommunityDriverMainFrame() override;
-// private:
-//     void OnMouseLeftDown(wxMouseEvent& event);
-//     void OnMouseLeftUp(wxMouseEvent&);
-//     void OnMouseMotion(wxMouseEvent& event);
-//     void OnMouseCaptureLost(wxMouseCaptureLostEvent&);
-//     void OnResize(wxSizeEvent& event);
-//     void OnCloseButton(wxCommandEvent& event);
-//     void FinishDrag();
-//     void UpdateCloseButton();
-//     bool mDragging;
-//     wxPoint mDragStartMouse;
-//     wxPoint mDragStartWindow;
-//
-//     wxButton* mCloseButton;
-// };
-
-wxIMPLEMENT_APP(UdCapCommunityDriverUI);
+// gdksurface-win32.c _gdk_win32_surface_compute_size (Fixed in GTK 4.18.3)
+// >>>>
+// size_changed = width != impl->next_layout.configured_width ||
+//                  height != impl->next_layout.configured_height;
+// ====
+// size_changed = surface->width != impl->next_layout.configured_width ||
+//                  surface->height != impl->next_layout.configured_height;
+// <<<<
 
 #endif //MAIN_H

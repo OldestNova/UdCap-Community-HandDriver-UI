@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.31)
+cmake_minimum_required(VERSION 3.27.8)
 project(UdCapCommunityDriverUI)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -10,31 +10,42 @@ file(
         EXPECTED_HASH SHA256=78ba32abdf798bc616bab7c73aac32a17bbd7b06ad9e26a6add69de8f3ae4791
 )
 include(${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake)
-
+find_package(PkgConfig)
+pkg_check_modules(GTKMM_VARS REQUIRED IMPORTED_TARGET gtkmm-4.0)
 
 find_package(assimp CONFIG REQUIRED)
-find_package(wxWidgets CONFIG REQUIRED)
-
+CPMAddPackage(
+        NAME config-cxx
+        GITHUB_REPOSITORY cieslarmichal/config-cxx
+        GIT_TAG main
+        OPTIONS "BUILD_CONFIG_CXX_TESTS=OFF"
+)
 CPMAddPackage(
         NAME threepp
         GITHUB_REPOSITORY cubesky/threepp
         GIT_TAG master
         OPTIONS "THREEPP_BUILD_EXAMPLES=OFF" "THREEPP_BUILD_TESTS=OFF" "THREEPP_WITH_GLFW=OFF"
 )
+CPMAddPackage(
+        NAME oscpp
+        GITHUB_REPOSITORY kaoskorobase/oscpp
+        GIT_TAG master
+        DOWNLOAD_ONLY ON
+)
+include_directories(${oscpp_SOURCE_DIR}/include)
 find_package(OpenGL REQUIRED)
+set(COPY_HIDAPI_DLL OFF)
+add_subdirectory(udcap-community-handdriver-core)
 file(GLOB_RECURSE SRC_FILES
         src/*.cpp
         src/*.h
         src/*.hpp
-        ui/*.h
-        ui/*.cpp
 )
 include_directories(src)
-include_directories(ui)
 IF (WIN32)
     add_executable(UdCapCommunityDriverUI WIN32 ${SRC_FILES})
 ELSE ()
     add_executable(UdCapCommunityDriverUI ${SRC_FILES})
 ENDIF ()
-target_link_libraries(UdCapCommunityDriverUI PRIVATE OpenGL::GL OpenGL::GLU wx::core wx::base wx::adv wx::gl threepp assimp::assimp)
+target_link_libraries(UdCapCommunityDriverUI PRIVATE OpenGL::GL OpenGL::GLU config-cxx PkgConfig::GTKMM_VARS threepp assimp::assimp UdCapCommunityDriverCore SerialReborn)
 
