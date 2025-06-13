@@ -21,8 +21,7 @@
 #include <UdCapV1Core.h>
 
 #include "../components/OSCSender.h"
-#include "../components/VMCPoseSender.h"
-#include "../components/VMCControllerSender.h"
+#include "../components/VMCSender.h"
 
 class ConsumerUI: public Gtk::Window, public threepp::PeripheralsEventSource {
 public:
@@ -65,9 +64,7 @@ private:
     bool rightReady = false;
     std::unique_ptr<OSCSender> mOSCSenderLeft;
     std::unique_ptr<OSCSender> mOSCSenderRight;
-    std::unique_ptr<VMCPoseSender> mVMCSenderLeft;
-    std::unique_ptr<VMCPoseSender> mVMCSenderRight;
-    std::unique_ptr<VMCControllerSender> mVMCControllerSender;
+    std::unique_ptr<VMCSender> mVMCSender;
     void buildMenu();
 protected:
     bool on_gl_render(const Glib::RefPtr<Gdk::GLContext>& context);

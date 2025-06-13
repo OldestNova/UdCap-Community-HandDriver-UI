@@ -237,9 +237,9 @@ void ConsumerUI::allReady() {
         mStatus.set_markup(_("<span font='18' weight='bold'>Ready</span>"));
         mDescription.set_text(_("UdCap running normally."));
         // TODO
-        mVMCSenderLeft = std::make_unique<VMCPoseSender>("127.0.0.1", 39540, mHandCoreLeft);
-        mVMCSenderRight = std::make_unique<VMCPoseSender>("127.0.0.1", 39540, mHandCoreRight);
-        mVMCControllerSender = std::make_unique<VMCControllerSender>("127.0.0.1", 39540, mHandCoreLeft, mHandCoreRight);
+        mVMCSender = std::make_unique<VMCSender>("127.0.0.1", 39540);
+        mVMCSender->add(mHandCoreLeft);
+        mVMCSender->add(mHandCoreRight);
         mVMC.set(create_placeholder_blue_image());
     }
 }

@@ -1,28 +1,32 @@
 //
-// Created by max_3 on 2025/6/13.
+// Created by max_3 on 2025/6/10.
 //
 
-#ifndef UDCAPCOMMUNITYDRIVERUI_VMCCONTROLLERSENDER_H
-#define UDCAPCOMMUNITYDRIVERUI_VMCCONTROLLERSENDER_H
+#ifndef UDCAPCOMMUNITYDRIVERUI_VMCSENDER_H
+#define UDCAPCOMMUNITYDRIVERUI_VMCSENDER_H
+
 #include <memory>
 #include <functional>
 #include <boost/asio.hpp>
 #include <UdCapV1Core.h>
-
-class VMCControllerSender {
+class VMCSender {
 public:
-    explicit VMCControllerSender(std::string _host, uint16_t _port, std::shared_ptr<UdCapV1Core> _coreLeft, std::shared_ptr<UdCapV1Core> _coreRight);
-    ~VMCControllerSender();
+    explicit VMCSender(std::string _host, uint16_t _port);
+    void add(std::shared_ptr<UdCapV1Core> _core);
+    void remove(bool left, bool right);
     void updateController();
+    ~VMCSender();
 private:
     std::shared_ptr<UdCapV1Core> coreLeft;
     std::shared_ptr<UdCapV1Core> coreRight;
     std::string host;
     uint16_t port = 0;
-    std::vector<std::function<void()>> unlisten;
+    std::function<void()> unlistenLeft;
+    std::function<void()> unlistenRight;
     boost::asio::io_context io_context;
     boost::asio::ip::udp::socket socket;
     boost::asio::ip::basic_resolver_results<boost::asio::ip::udp> endpoints;
+
     float leftJoyXP = 0;
     float leftJoyXN = 0;
     float leftJoyYP = 0;
@@ -31,6 +35,12 @@ private:
     float leftButtonB = 0;
     float leftButtonJoy = 0;
     float leftButtonMenu = 0;
+    float leftButtonTrackpad = 0;
+    float leftButtonGrip = 0;
+    float leftButtonTrigger = 0;
+    float leftTrackpad = 0;
+    float leftGrip = 0;
+    float leftTrigger = 0;
     float rightJoyXP = 0;
     float rightJoyXN = 0;
     float rightJoyYP = 0;
@@ -39,7 +49,13 @@ private:
     float rightButtonB = 0;
     float rightButtonJoy = 0;
     float rightButtonMenu = 0;
+    float rightButtonTrackpad = 0;
+    float rightButtonGrip = 0;
+    float rightButtonTrigger = 0;
+    float rightTrackpad = 0;
+    float rightGrip = 0;
+    float rightTrigger = 0;
 };
 
 
-#endif //UDCAPCOMMUNITYDRIVERUI_VMCCONTROLLERSENDER_H
+#endif //UDCAPCOMMUNITYDRIVERUI_VMCSENDER_H
