@@ -174,6 +174,7 @@ ConsumerUI::ConsumerUI():
                          mRightHand.set(create_placeholder_green_image());
                      }
                      if (leftHandSerial && rightHandSerial) {
+                         std::lock_guard lk(uiMutex);
                          mHandCoreLeft = std::make_shared<UdCapV1Core>(leftHandSerial);
                          mHandCoreRight = std::make_shared<UdCapV1Core>(rightHandSerial);
                          mStatus.set_markup(_("<span font='18' weight='bold'>Found</span>"));
@@ -233,6 +234,7 @@ ConsumerUI::~ConsumerUI() {
 }
 
 void ConsumerUI::allReady() {
+    std::lock_guard lk(uiMutex);
     if (leftReady && rightReady) {
         mStatus.set_markup(_("<span font='18' weight='bold'>Ready</span>"));
         mDescription.set_text(_("UdCap running normally."));
@@ -268,6 +270,7 @@ void ConsumerUI::on_calibrate_button_clicked() {
 }
 
 void ConsumerUI::initConnectReceiver() {
+    std::lock_guard lk(uiMutex);
     if (mLeftState == UD_INIT_STATE_LINKED && mRightState == UD_INIT_STATE_LINKED) {
         mStatus.set_markup(_("<span font='18' weight='bold'>Wait for Calibration</span>"));
         mDescription.set_text(_("UdCap Gloves are waiting for calibration."));

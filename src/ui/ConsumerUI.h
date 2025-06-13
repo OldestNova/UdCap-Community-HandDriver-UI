@@ -31,6 +31,7 @@ public:
 private:
     void initConnectReceiver();
     void allReady();
+    std::mutex uiMutex;
     Gtk::Box mMainBox;
     Gtk::Paned mVPaned;
     Gtk::Box mTopBox;

@@ -9,6 +9,13 @@
 #include <functional>
 #include <boost/asio.hpp>
 #include <UdCapV1Core.h>
+
+class UdCapV1VMCPacket {
+public:
+    UdTarget target;
+    UdCapV1MCUPacket data;
+};
+
 class VMCSender {
 public:
     explicit VMCSender(std::string _host, uint16_t _port);
@@ -26,6 +33,12 @@ private:
     boost::asio::io_context io_context;
     boost::asio::ip::udp::socket socket;
     boost::asio::ip::basic_resolver_results<boost::asio::ip::udp> endpoints;
+
+    std::condition_variable cv;
+    std::mutex mtx;
+    std::thread sendThread;
+    std::queue<UdCapV1VMCPacket> packetQueue;
+    bool running = true;
 
     float leftJoyXP = 0;
     float leftJoyXN = 0;
