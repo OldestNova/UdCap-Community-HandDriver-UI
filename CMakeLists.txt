@@ -28,7 +28,7 @@ CPMAddPackage(
 )
 CPMAddPackage(
         NAME oscpp
-        GITHUB_REPOSITORY kaoskorobase/oscpp
+        GITHUB_REPOSITORY cubesky/oscpp
         GIT_TAG master
         DOWNLOAD_ONLY ON
 )

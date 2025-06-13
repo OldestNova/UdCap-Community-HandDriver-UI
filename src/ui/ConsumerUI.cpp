@@ -180,10 +180,10 @@ ConsumerUI::ConsumerUI():
                          mStatus.set_markup(_("<span font='18' weight='bold'>Found</span>"));
                          mDescription.set_text(_("Waiting for UdCap Gloves..."));
                          mCalibrate.set_sensitive(false);
-                         mHandCoreLeft->listen([&](const UdCapV1MCUPacket &data) {
-                             if (data.commandType == CMD_LINK_STATE) {
-                                 mLeftState = data.udState;
-                                switch (data.udState) {
+                         mHandCoreLeft->listen([&](std::shared_ptr<UdCapV1MCUPacket> data) {
+                             if (data->commandType == CMD_LINK_STATE) {
+                                 mLeftState = data->udState;
+                                switch (data->udState) {
                                     case UD_INIT_STATE_LINKED:
                                     {
                                         mLeftHand.set(create_placeholder_blue_image());
@@ -195,15 +195,15 @@ ConsumerUI::ConsumerUI():
                                     }
                                 }
                                 initConnectReceiver();
-                             } else if (data.commandType == CMD_READY) {
-                                 leftReady = data.isReady;
+                             } else if (data->commandType == CMD_READY) {
+                                 leftReady = data->isReady;
                                  allReady();
                              }
                          });
-                         mHandCoreRight->listen([&](const UdCapV1MCUPacket &data) {
-                             if (data.commandType == CMD_LINK_STATE) {
-                                 mRightState = data.udState;
-                                 switch (data.udState) {
+                         mHandCoreRight->listen([&](std::shared_ptr<UdCapV1MCUPacket> data) {
+                             if (data->commandType == CMD_LINK_STATE) {
+                                 mRightState = data->udState;
+                                 switch (data->udState) {
                                      case UD_INIT_STATE_LINKED:
                                      {
                                          mRightHand.set(create_placeholder_blue_image());
@@ -215,8 +215,8 @@ ConsumerUI::ConsumerUI():
                                      }
                                  }
                                  initConnectReceiver();
-                             } else if (data.commandType == CMD_READY) {
-                                 rightReady = data.isReady;
+                             } else if (data->commandType == CMD_READY) {
+                                 rightReady = data->isReady;
                                  allReady();
                              }
                          });
@@ -243,6 +243,10 @@ void ConsumerUI::allReady() {
         mVMCSender->add(mHandCoreLeft);
         mVMCSender->add(mHandCoreRight);
         mVMC.set(create_placeholder_blue_image());
+        mOSCSender = std::make_unique<OSCSender>("127.0.0.1", 9000);
+        mOSCSender->add(mHandCoreLeft);
+        mOSCSender->add(mHandCoreRight);
+        mOSC.set(create_placeholder_blue_image());
     }
 }
 

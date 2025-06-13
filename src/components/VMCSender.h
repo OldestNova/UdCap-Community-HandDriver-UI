@@ -13,7 +13,7 @@
 class UdCapV1VMCPacket {
 public:
     UdTarget target;
-    UdCapV1MCUPacket data;
+    std::shared_ptr<UdCapV1MCUPacket> data;
 };
 
 class VMCSender {
@@ -34,6 +34,7 @@ private:
     boost::asio::ip::udp::socket socket;
     boost::asio::ip::basic_resolver_results<boost::asio::ip::udp> endpoints;
 
+    std::mutex queueMutex;
     std::condition_variable cv;
     std::mutex mtx;
     std::thread sendThread;

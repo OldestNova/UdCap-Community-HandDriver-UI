@@ -20,22 +20,23 @@ VMCSender::VMCSender(std::string _host, uint16_t _port): host(_host), port(_port
                 continue;
             }
             try {
+                std::lock_guard lk(queueMutex);
                 UdCapV1VMCPacket p = packetQueue.front();
                 packetQueue.pop();
                 UdTarget target = p.target;
-                UdCapV1MCUPacket data = p.data;
+                std::shared_ptr<UdCapV1MCUPacket> data = p.data;
                 std::string prefix;
                 if (target == UD_TARGET_LEFT_HAND) {
                     prefix = "Left";
                 } else {
                     prefix = "Right";
                 }
-                if (data.commandType == CMD_SKELETON_QUATERNION) {
+                if (data->commandType == CMD_SKELETON_QUATERNION) {
                     char buffer[128 * 15] = {0};
                     OSCPP::Client::Packet packet(buffer, 128 * 15);
                     uint64_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
                             std::chrono::system_clock::now().time_since_epoch()).count();
-                    HandQuaternion q = data.skeletonQuaternion;
+                    HandQuaternion q = data->skeletonQuaternion;
                     packet.openBundle(timestamp)
                             .openMessage("/VMC/Ext/Bone/Pos", 8)
                             .string((prefix + "ThumbDistal").c_str())
@@ -132,62 +133,62 @@ VMCSender::VMCSender(std::string _host, uint16_t _port): host(_host), port(_port
                     } catch (std::exception& e) {
 
                     }
-                } else if (data.commandType == CMD_INPUT_JOYSTICK) {
+                } else if (data->commandType == CMD_INPUT_JOYSTICK) {
                     if (target == UD_TARGET_LEFT_HAND) {
-                        if (data.joystickData.joyX > 0) {
-                            leftJoyXP = data.joystickData.joyX;
+                        if (data->joystickData.joyX > 0) {
+                            leftJoyXP = data->joystickData.joyX;
                             leftJoyXN = 0.0f;
                         } else {
                             leftJoyXP = 0.0f;
-                            leftJoyXN = -data.joystickData.joyX;
+                            leftJoyXN = -data->joystickData.joyX;
                         }
-                        if (data.joystickData.joyY > 0) {
-                            leftJoyYP = data.joystickData.joyY;
+                        if (data->joystickData.joyY > 0) {
+                            leftJoyYP = data->joystickData.joyY;
                             leftJoyYN = 0.0f;
                         } else {
                             leftJoyYP = 0.0f;
-                            leftJoyYN = -data.joystickData.joyY;
+                            leftJoyYN = -data->joystickData.joyY;
                         }
                     } else {
-                        if (data.joystickData.joyX > 0) {
-                            rightJoyXP = data.joystickData.joyX;
+                        if (data->joystickData.joyX > 0) {
+                            rightJoyXP = data->joystickData.joyX;
                             rightJoyXN = 0.0f;
                         } else {
                             rightJoyXP = 0.0f;
-                            rightJoyXN = -data.joystickData.joyX;
+                            rightJoyXN = -data->joystickData.joyX;
                         }
-                        if (data.joystickData.joyY > 0) {
-                            rightJoyYP = data.joystickData.joyY;
+                        if (data->joystickData.joyY > 0) {
+                            rightJoyYP = data->joystickData.joyY;
                             rightJoyYN = 0.0f;
                         } else {
                             rightJoyYP = 0.0f;
-                            rightJoyYN = -data.joystickData.joyY;
+                            rightJoyYN = -data->joystickData.joyY;
                         }
                     }
 //            updateController();  // Not need, CMD_INPUT_BUTTON will fire later.
-                } else if (data.commandType == CMD_INPUT_BUTTON) {
+                } else if (data->commandType == CMD_INPUT_BUTTON) {
                     if (target == UD_TARGET_LEFT_HAND) {
-                        leftButtonA = data.button.btnA ? 1.0f : 0.0f;
-                        leftButtonB = data.button.btnB ? 1.0f : 0.0f;
-                        leftButtonJoy = data.button.btnJoyStick ? 1.0f : 0.0f;
-                        leftButtonMenu = data.button.btnMenu ? 1.0f : 0.0f;
-                        leftButtonTrigger = data.button.btnTrigger ? 1.0f: 0.0f;
-                        leftButtonGrip = data.button.btnGrip ? 1.0f: 0.0f;
-                        leftButtonTrackpad = data.button.btnTrackpad ? 1.0f: 0.0f;
-                        leftTrigger = data.button.trigger;
-                        leftGrip = data.button.grip;
-                        leftTrackpad = data.button.trackpad;
+                        leftButtonA = data->button.btnA ? 1.0f : 0.0f;
+                        leftButtonB = data->button.btnB ? 1.0f : 0.0f;
+                        leftButtonJoy = data->button.btnJoyStick ? 1.0f : 0.0f;
+                        leftButtonMenu = data->button.btnMenu ? 1.0f : 0.0f;
+                        leftButtonTrigger = data->button.btnTrigger ? 1.0f: 0.0f;
+                        leftButtonGrip = data->button.btnGrip ? 1.0f: 0.0f;
+                        leftButtonTrackpad = data->button.btnTrackpad ? 1.0f: 0.0f;
+                        leftTrigger = data->button.trigger;
+                        leftGrip = data->button.grip;
+                        leftTrackpad = data->button.trackpad;
                     } else {
-                        rightButtonA = data.button.btnA ? 1.0f : 0.0f;
-                        rightButtonB = data.button.btnB ? 1.0f : 0.0f;
-                        rightButtonJoy = data.button.btnJoyStick ? 1.0f : 0.0f;
-                        rightButtonMenu = data.button.btnMenu ? 1.0f : 0.0f;
-                        rightButtonTrigger = data.button.btnTrigger ? 1.0f: 0.0f;
-                        rightButtonGrip = data.button.btnGrip ? 1.0f: 0.0f;
-                        rightButtonTrackpad = data.button.btnTrackpad ? 1.0f: 0.0f;
-                        rightTrigger = data.button.trigger;
-                        rightGrip = data.button.grip;
-                        rightTrackpad = data.button.trackpad;
+                        rightButtonA = data->button.btnA ? 1.0f : 0.0f;
+                        rightButtonB = data->button.btnB ? 1.0f : 0.0f;
+                        rightButtonJoy = data->button.btnJoyStick ? 1.0f : 0.0f;
+                        rightButtonMenu = data->button.btnMenu ? 1.0f : 0.0f;
+                        rightButtonTrigger = data->button.btnTrigger ? 1.0f: 0.0f;
+                        rightButtonGrip = data->button.btnGrip ? 1.0f: 0.0f;
+                        rightButtonTrackpad = data->button.btnTrackpad ? 1.0f: 0.0f;
+                        rightTrigger = data->button.trigger;
+                        rightGrip = data->button.grip;
+                        rightTrackpad = data->button.trackpad;
                     }
                     updateController();
                 }
@@ -243,7 +244,8 @@ void VMCSender::add(std::shared_ptr<UdCapV1Core> _core) {
     if (target == UD_TARGET_RIGHT_HAND) {
         coreRight = _core;
     }
-    std::function<void()> unlisten = _core->listen([this, target](UdCapV1MCUPacket data) {
+    std::function<void()> unlisten = _core->listen([this, target](std::shared_ptr<UdCapV1MCUPacket> data) {
+        std::lock_guard lk(queueMutex);
         UdCapV1VMCPacket p;
         p.target = target;
         p.data = data;

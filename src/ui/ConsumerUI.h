@@ -63,8 +63,7 @@ private:
     UdState mRightState = UD_INIT_STATE_INIT;
     bool leftReady = false;
     bool rightReady = false;
-    std::unique_ptr<OSCSender> mOSCSenderLeft;
-    std::unique_ptr<OSCSender> mOSCSenderRight;
+    std::unique_ptr<OSCSender> mOSCSender;
     std::unique_ptr<VMCSender> mVMCSender;
     void buildMenu();
 protected:
