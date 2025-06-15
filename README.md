@@ -28,6 +28,7 @@
  * assimp
  * OpenGL
  * gtkmm-4
+ * rapidjson
  * config-cxx (CPM 自动下载)
  * threepp (CPM 自动下载)
  * oscpp (CPM 自动下载)

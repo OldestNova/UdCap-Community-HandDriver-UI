@@ -32,6 +32,7 @@ CPMAddPackage(
         GIT_TAG master
         DOWNLOAD_ONLY ON
 )
+find_package(RapidJSON CONFIG REQUIRED)
 include_directories(${oscpp_SOURCE_DIR}/include)
 find_package(OpenGL REQUIRED)
 set(COPY_HIDAPI_DLL OFF)
@@ -47,5 +48,5 @@ IF (WIN32)
 ELSE ()
     add_executable(UdCapCommunityDriverUI ${SRC_FILES})
 ENDIF ()
-target_link_libraries(UdCapCommunityDriverUI PRIVATE OpenGL::GL OpenGL::GLU config-cxx PkgConfig::GTKMM_VARS threepp assimp::assimp UdCapCommunityDriverCore SerialReborn)
+target_link_libraries(UdCapCommunityDriverUI PRIVATE OpenGL::GL OpenGL::GLU config-cxx PkgConfig::GTKMM_VARS threepp assimp::assimp UdCapCommunityDriverCore SerialReborn RapidJSON rapidjson)
 
