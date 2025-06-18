@@ -22,12 +22,15 @@
 
 #include "../components/OSCSender.h"
 #include "../components/VMCSender.h"
+#include "dialogs/DataTransferDialog.h"
+#include "components/QTSender.h"
 
-class ConsumerUI: public Gtk::Window, public threepp::PeripheralsEventSource {
+class ConsumerUI: public Gtk::ApplicationWindow, public threepp::PeripheralsEventSource {
 public:
-    ConsumerUI();
+    ConsumerUI(std::shared_ptr<Gtk::Application> app);
     ~ConsumerUI() override;
     threepp::WindowSize size() const override;
+
 private:
     void initConnectReceiver();
     void allReady();
@@ -65,7 +68,20 @@ private:
     bool rightReady = false;
     std::unique_ptr<OSCSender> mOSCSender;
     std::unique_ptr<VMCSender> mVMCSender;
+    std::unique_ptr<QTSender> mUdCapQTSender;
     void buildMenu();
+
+    std::thread eventThread;
+    std::condition_variable eventCV;
+    std::queue<std::function<void()>> eventQueue;
+    std::mutex eventMutex;
+    std::mutex eventWaitMutex;
+    bool eventRunning = true;
+    void runOnUIThread(std::function<void()>);
+    void setupVMCSender(bool enable, std::string host, uint16_t port);
+    void setupOSCSender(bool enable, std::string host, uint16_t port);
+    void setupUdcapQTSender(bool enable, std::string host, uint16_t port);
+    void setupVRSender(bool enable);
 protected:
     bool on_gl_render(const Glib::RefPtr<Gdk::GLContext>& context);
     void on_gl_realize();
@@ -73,6 +89,7 @@ protected:
     void on_gl_resize(int x, int y);
     void on_calibrate_button_clicked();
     std::unique_ptr<CalibrationUI> mCalibrationUI;
+    std::unique_ptr<DataTransferDialog> mDataTransferDialog;
 };
 
 

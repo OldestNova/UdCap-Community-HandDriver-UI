@@ -37,9 +37,9 @@ int main(int argc, char* argv[]) {
         driverType = UdCapDriverType::UD_CAP_DRIVER_TYPE_CONSUMER;
     }
     if (driverType == UdCapDriverType::UD_CAP_DRIVER_TYPE_ENTERPRISE) {
-        return app->make_window_and_run<EnterpriseUI>(argc, argv);
+        return app->make_window_and_run<EnterpriseUI>(argc, argv, app);
     } else if (driverType == UdCapDriverType::UD_CAP_DRIVER_TYPE_CONSUMER) {
-        return app->make_window_and_run<ConsumerUI>(argc, argv);
+        return app->make_window_and_run<ConsumerUI>(argc, argv, app);
     }
     return -1;
 }

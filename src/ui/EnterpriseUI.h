@@ -8,9 +8,9 @@
 #include <glibmm/i18n.h>
 #include <gtkmm.h>
 
-class EnterpriseUI: public Gtk::Window {
+class EnterpriseUI: public Gtk::ApplicationWindow {
 public:
-    EnterpriseUI();
+    EnterpriseUI(std::shared_ptr<Gtk::Application> app);
 };
 
 

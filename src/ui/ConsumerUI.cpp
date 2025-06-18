@@ -21,7 +21,7 @@ Glib::RefPtr<Gdk::Pixbuf> create_placeholder_blue_image() {
     pb->fill(0x0000FFFF); // 绿色占位
     return pb;
 }
-ConsumerUI::ConsumerUI():
+ConsumerUI::ConsumerUI(std::shared_ptr<Gtk::Application> app):
     mMainBox(Gtk::Orientation::VERTICAL),
     mStatus(_("Not Connect"), Gtk::Align::START),
     mDescription(_("Please connect your UdCap gloves."), Gtk::Align::START),
@@ -42,6 +42,7 @@ ConsumerUI::ConsumerUI():
     mOSC(),
     mVMC(),
     mBroadcast() {
+    set_application(app);
     set_title(_("UdCap Community Driver - Consumer Edition"));
     set_default_size(600, 550);
     set_resizable(false);
@@ -228,36 +229,159 @@ ConsumerUI::ConsumerUI():
         }
     });
     probeThread.detach();
+
+    eventThread = std::thread([this](){
+        while (eventRunning) {
+            if (eventQueue.empty()) {
+                std::unique_lock lk(eventWaitMutex);
+                eventCV.wait_for(lk, std::chrono::milliseconds(100));
+                continue;
+            }
+            std::lock_guard lk(eventMutex);
+            if (eventQueue.empty()) {
+                continue;
+            }
+            std::function<void()> event = std::move(eventQueue.front());
+            eventQueue.pop();
+            try {
+                std::lock_guard lku(uiMutex);
+                event();
+            } catch (const std::exception &e) {
+                std::cerr << "Error in event: " << e.what() << std::endl;
+            }
+        }
+    });
 }
 
 ConsumerUI::~ConsumerUI() {
+    eventRunning = false;
+    if (eventThread.joinable()) {
+        eventThread.join();
+    }
+}
+
+void ConsumerUI::runOnUIThread(std::function<void()> callEvent) {
+    std::lock_guard lk(eventMutex);
+    eventQueue.push(callEvent);
+    eventCV.notify_all();
 }
 
 void ConsumerUI::allReady() {
     std::lock_guard lk(uiMutex);
     if (leftReady && rightReady) {
-        mStatus.set_markup(_("<span font='18' weight='bold'>Ready</span>"));
-        mDescription.set_text(_("UdCap running normally."));
-        // TODO
-        mVMCSender = std::make_unique<VMCSender>("127.0.0.1", 39540);
-        mVMCSender->add(mHandCoreLeft);
-        mVMCSender->add(mHandCoreRight);
-        mVMC.set(create_placeholder_blue_image());
-        mOSCSender = std::make_unique<OSCSender>("127.0.0.1", 9000);
-        mOSCSender->add(mHandCoreLeft);
-        mOSCSender->add(mHandCoreRight);
-        mOSC.set(create_placeholder_blue_image());
+        runOnUIThread([this]() {
+            mStatus.set_markup(_("<span font='18' weight='bold'>Ready</span>"));
+            mDescription.set_text(_("UdCap running normally."));
+        });
+        // TODO ReadConfig
+        setupVMCSender(true, "127.0.0.1", 39540);
+//        setupOSCSender();
+//        setupUdcapQTSender();
+//        setupVRSender();
     }
 }
 
 void ConsumerUI::buildMenu() {
     mSettingsMenu = Gio::Menu::create();
-    mSettingsMenu->append(_("Hand Capture"), "win.settings.hand_capture");
     mSettingsMenu->append(_("Controller"), "win.settings.controller");
     mSettingsMenu->append(_("VR Settings"), "win.settings.vr");
     mSettingsMenu->append(_("Hand Settings"), "win.settings.hands");
     mSettingsMenu->append(_("Data Transfer"), "win.settings.data_transfer");
     mSettingsMenu->append(_("Preference"), "app.settings.preference");
+    auto actionDataTransfer = Gio::SimpleAction::create("settings.data_transfer");
+    actionDataTransfer->signal_activate().connect([this](const Glib::VariantBase&) {
+        mDataTransferDialog = std::make_unique<DataTransferDialog>([this](bool enable, std::string host, uint16_t port) {
+            // TODO Save
+            setupVMCSender(enable, host, port);
+        },[this](bool enable, std::string host, uint16_t port) {
+            // TODO Save
+            setupOSCSender(enable, host, port);
+        },[this](bool enable, std::string host, uint16_t port) {
+            // TODO Save
+            setupUdcapQTSender(enable, host, port);
+        },[this](bool enable) {
+            // TODO
+        });
+        mDataTransferDialog->set_transient_for(*this);
+        mDataTransferDialog->show();
+    });
+    add_action(actionDataTransfer);
+}
+
+void ConsumerUI::setupVMCSender(bool enable, std::string host, uint16_t port) {
+    runOnUIThread([this, enable, host, port](){
+        if (enable) {
+            if (mLeftState != UD_INIT_STATE_LINKED || mRightState != UD_INIT_STATE_LINKED) {
+                mVMC.set(create_placeholder_green_image());
+                return;
+            }
+            if (mVMCSender) {
+                mVMCSender.reset(nullptr);
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            mVMCSender = std::make_unique<VMCSender>(host, port);
+            mVMCSender->add(mHandCoreLeft);
+            mVMCSender->add(mHandCoreRight);
+            mVMC.set(create_placeholder_blue_image());
+        } else {
+            if (mVMCSender) {
+                mVMCSender.reset(nullptr);
+                mVMC.set(create_placeholder_image());
+            }
+        }
+    });
+}
+
+void ConsumerUI::setupOSCSender(bool enable, std::string host, uint16_t port) {
+    runOnUIThread([this, enable, host, port](){
+        if (enable) {
+            if (mLeftState != UD_INIT_STATE_LINKED || mRightState != UD_INIT_STATE_LINKED) {
+                mOSC.set(create_placeholder_green_image());
+                return;
+            }
+            if (mOSCSender) {
+                mOSCSender.reset(nullptr);
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            mOSCSender = std::make_unique<OSCSender>(host, port);
+            mOSCSender->add(mHandCoreLeft);
+            mOSCSender->add(mHandCoreRight);
+            mOSC.set(create_placeholder_blue_image());
+        } else {
+            if (mOSCSender) {
+                mOSCSender.reset(nullptr);
+                mOSC.set(create_placeholder_image());
+            }
+        }
+    });
+}
+
+void ConsumerUI::setupUdcapQTSender(bool enable, std::string host, uint16_t port) {
+    runOnUIThread([this, enable, host, port](){
+        if (enable) {
+            if (mLeftState != UD_INIT_STATE_LINKED || mRightState != UD_INIT_STATE_LINKED) {
+                mBroadcast.set(create_placeholder_green_image());
+                return;
+            }
+            if (mUdCapQTSender) {
+                mUdCapQTSender.reset(nullptr);
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            mUdCapQTSender = std::make_unique<QTSender>(host, port);
+            mUdCapQTSender->add(mHandCoreLeft);
+            mUdCapQTSender->add(mHandCoreRight);
+            mBroadcast.set(create_placeholder_blue_image());
+        } else {
+            if (mOSCSender) {
+                mUdCapQTSender.reset(nullptr);
+                mBroadcast.set(create_placeholder_image());
+            }
+        }
+    });
+}
+
+void ConsumerUI::setupVRSender(bool enable) {
+
 }
 
 void ConsumerUI::on_calibrate_button_clicked() {

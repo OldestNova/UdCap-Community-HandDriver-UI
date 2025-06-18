@@ -18,19 +18,26 @@ CPMAddPackage(
         NAME config-cxx
         GITHUB_REPOSITORY cieslarmichal/config-cxx
         GIT_TAG main
-        OPTIONS "BUILD_CONFIG_CXX_TESTS=OFF"
+        OPTIONS "BUILD_CONFIG_CXX_TESTS OFF"
 )
 CPMAddPackage(
         NAME threepp
         GITHUB_REPOSITORY cubesky/threepp
         GIT_TAG master
-        OPTIONS "THREEPP_BUILD_EXAMPLES=OFF" "THREEPP_BUILD_TESTS=OFF" "THREEPP_WITH_GLFW=OFF"
+        OPTIONS "THREEPP_BUILD_EXAMPLES OFF" "THREEPP_BUILD_TESTS OFF" "THREEPP_WITH_GLFW OFF"
 )
 CPMAddPackage(
         NAME oscpp
         GITHUB_REPOSITORY cubesky/oscpp
         GIT_TAG master
         DOWNLOAD_ONLY ON
+)
+CPMAddPackage(
+        NAME Boost
+        VERSION 1.88.0 # Versions less than 1.85.0 may need patches for installation targets.
+        URL https://github.com/boostorg/boost/releases/download/boost-1.88.0/boost-1.88.0-cmake.tar.xz
+        OPTIONS "BOOST_ENABLE_CMAKE ON" "BOOST_SKIP_INSTALL_RULES ON" # Set `OFF` for installation
+        "BUILD_SHARED_LIBS OFF" "BOOST_INCLUDE_LIBRARIES container\\\;asio\\\;optional\\\;date_time" # Note the escapes!
 )
 find_package(RapidJSON CONFIG REQUIRED)
 include_directories(${oscpp_SOURCE_DIR}/include)
