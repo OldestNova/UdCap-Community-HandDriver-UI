@@ -23,6 +23,7 @@
 #include "../components/OSCSender.h"
 #include "../components/VMCSender.h"
 #include "dialogs/DataTransferDialog.h"
+#include "dialogs/FirmwareDialog.h"
 #include "components/QTSender.h"
 
 class ConsumerUI: public Gtk::ApplicationWindow, public threepp::PeripheralsEventSource {
@@ -90,6 +91,7 @@ protected:
     void on_calibrate_button_clicked();
     std::unique_ptr<CalibrationUI> mCalibrationUI;
     std::unique_ptr<DataTransferDialog> mDataTransferDialog;
+    std::unique_ptr<FirmwareDialog> mFirmwareDialog;
 };
 
 

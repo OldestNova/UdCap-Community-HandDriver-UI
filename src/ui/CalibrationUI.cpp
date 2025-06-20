@@ -76,6 +76,9 @@ CalibrationUI::CalibrationUI(std::vector<std::shared_ptr<UdCapV1Core>> _core):
     mEInfoLabel.set_justify(Gtk::Justification::CENTER);
     mEInfoLabel.set_halign(Gtk::Align::CENTER);
     mEReturnButton.set_label(_("Close"));
+    mEReturnButton.signal_clicked().connect([this]() {
+        destroy();
+    });
     mEVbox.append(mETitleLabel);
     mEVbox.append(mEInfoLabel);
     mEVbox.append(mEReturnButton);

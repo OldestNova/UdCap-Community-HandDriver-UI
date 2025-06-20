@@ -4,23 +4,10 @@
 
 #include <iostream>
 #include "ConsumerUI.h"
+#include "../components/UserConfig.h"
 #include "UsbEnumerate.h"
+#include "../components/Placeholder.h"
 
-Glib::RefPtr<Gdk::Pixbuf> create_placeholder_image() {
-    auto pb = Gdk::Pixbuf::create(Gdk::Colorspace::RGB, false, 8, 48, 48);
-    pb->fill(0xAAAAAAFF); // 灰色占位
-    return pb;
-}
-Glib::RefPtr<Gdk::Pixbuf> create_placeholder_green_image() {
-    auto pb = Gdk::Pixbuf::create(Gdk::Colorspace::RGB, false, 8, 48, 48);
-    pb->fill(0x00FF00FF); // 绿色占位
-    return pb;
-}
-Glib::RefPtr<Gdk::Pixbuf> create_placeholder_blue_image() {
-    auto pb = Gdk::Pixbuf::create(Gdk::Colorspace::RGB, false, 8, 48, 48);
-    pb->fill(0x0000FFFF); // 绿色占位
-    return pb;
-}
 ConsumerUI::ConsumerUI(std::shared_ptr<Gtk::Application> app):
     mMainBox(Gtk::Orientation::VERTICAL),
     mStatus(_("Not Connect"), Gtk::Align::START),
@@ -142,6 +129,7 @@ ConsumerUI::ConsumerUI(std::shared_ptr<Gtk::Application> app):
 
     probeThread = std::thread([this]() {
         UsbEnumerate usbEnum;
+        std::vector<std::string> connected;
         while (true) {
              std::map<std::string, std::shared_ptr<PortAccessor>> receiver;
              usbEnum.refresh(UsbEnumerateRefreshType::USB_ENUMERATE_REFRESH_SERIAL);
@@ -149,13 +137,19 @@ ConsumerUI::ConsumerUI(std::shared_ptr<Gtk::Application> app):
                  return device.vid == 0x1A86 && (device.pid == 0x7523 || device.pid == 0x0001);
              });
              for (const auto &device: devices) {
+                 if (std::find(connected.begin(), connected.end(), device.portName) != connected.end()) {
+                     continue; // Already connected
+                 }
+                 std::cout << "Probing: " << device.portName << std::endl;
                  std::shared_ptr<PortAccessor> portAccessor = std::make_shared<PortAccessor>(device);
                  UdCapProbe prober(portAccessor);
                  switch (prober.probe()) {
                      case UDCAP_PROBE_HAND_V1:
                      {
                          receiver[prober.getUDCapSerial()] = portAccessor;
+                         connected.push_back(device.portName);
                          std::cout << "Found UdCap Hand V1 device: " << prober.getUDCapSerial() << std::endl;
+                         break;
                      }
                      default:
                      {
@@ -164,6 +158,7 @@ ConsumerUI::ConsumerUI(std::shared_ptr<Gtk::Application> app):
                  }
              }
              if (!receiver.empty()) {
+                 bool needStopProbe = false;
                  for (const auto& recv: receiver) {
                      if (recv.first.ends_with('L') && leftHandSerial == nullptr) {
                          leftHandSerial = recv.second;
@@ -221,8 +216,12 @@ ConsumerUI::ConsumerUI(std::shared_ptr<Gtk::Application> app):
                                  allReady();
                              }
                          });
+                         needStopProbe = true;
                          break;
                      }
+                 }
+                 if (needStopProbe) {
+                     break;
                  }
              }
              std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -251,6 +250,21 @@ ConsumerUI::ConsumerUI(std::shared_ptr<Gtk::Application> app):
             }
         }
     });
+
+    setupVMCSender(
+            UserConfig::getInstance().getTree().get_optional<bool>("consumer.vmc.enabled").value_or(false),
+            UserConfig::getInstance().getTree().get_optional<std::string>("consumer.vmc.host").value_or("127.0.0.1"),
+            static_cast<uint16_t>(UserConfig::getInstance().getTree().get_optional<int>("consumer.vmc.port").value_or(39540)));
+    setupOSCSender(
+            UserConfig::getInstance().getTree().get_optional<bool>("consumer.osc.enabled").value_or(false),
+            UserConfig::getInstance().getTree().get_optional<std::string>("consumer.osc.host").value_or("127.0.0.1"),
+            static_cast<uint16_t>(UserConfig::getInstance().getTree().get_optional<int>("consumer.osc.port").value_or(9000)));
+    setupUdcapQTSender(
+            UserConfig::getInstance().getTree().get_optional<bool>("consumer.udCapQingTong.enabled").value_or(false),
+            UserConfig::getInstance().getTree().get_optional<std::string>("consumer.udCapQingTong.host").value_or("127.0.0.1"),
+            static_cast<uint16_t>(UserConfig::getInstance().getTree().get_optional<int>("consumer.udCapQingTong.port").value_or(6666)));
+    setupVRSender(
+            UserConfig::getInstance().getTree().get_optional<bool>("consumer.vr.enabled").value_or(false));
 }
 
 ConsumerUI::~ConsumerUI() {
@@ -273,11 +287,20 @@ void ConsumerUI::allReady() {
             mStatus.set_markup(_("<span font='18' weight='bold'>Ready</span>"));
             mDescription.set_text(_("UdCap running normally."));
         });
-        // TODO ReadConfig
-        setupVMCSender(true, "127.0.0.1", 39540);
-//        setupOSCSender();
-//        setupUdcapQTSender();
-//        setupVRSender();
+        setupVMCSender(
+                UserConfig::getInstance().getTree().get_optional<bool>("consumer.vmc.enabled").value_or(false),
+                UserConfig::getInstance().getTree().get_optional<std::string>("consumer.vmc.host").value_or("127.0.0.1"),
+                static_cast<uint16_t>(UserConfig::getInstance().getTree().get_optional<int>("consumer.vmc.port").value_or(39540)));
+        setupOSCSender(
+                UserConfig::getInstance().getTree().get_optional<bool>("consumer.osc.enabled").value_or(false),
+                UserConfig::getInstance().getTree().get_optional<std::string>("consumer.osc.host").value_or("127.0.0.1"),
+                static_cast<uint16_t>(UserConfig::getInstance().getTree().get_optional<int>("consumer.osc.port").value_or(9000)));
+        setupUdcapQTSender(
+                UserConfig::getInstance().getTree().get_optional<bool>("consumer.udCapQingTong.enabled").value_or(false),
+                UserConfig::getInstance().getTree().get_optional<std::string>("consumer.udCapQingTong.host").value_or("127.0.0.1"),
+                static_cast<uint16_t>(UserConfig::getInstance().getTree().get_optional<int>("consumer.udCapQingTong.port").value_or(6666)));
+        setupVRSender(
+                UserConfig::getInstance().getTree().get_optional<bool>("consumer.vr.enabled").value_or(false));
     }
 }
 
@@ -287,20 +310,43 @@ void ConsumerUI::buildMenu() {
     mSettingsMenu->append(_("VR Settings"), "win.settings.vr");
     mSettingsMenu->append(_("Hand Settings"), "win.settings.hands");
     mSettingsMenu->append(_("Data Transfer"), "win.settings.data_transfer");
+    mSettingsMenu->append(_("Firmware"), "win.settings.firmware");
     mSettingsMenu->append(_("Preference"), "app.settings.preference");
+
+    auto actionFirmware = Gio::SimpleAction::create("settings.firmware");
+    actionFirmware->signal_activate().connect([this](const Glib::VariantBase&) {
+        std::vector<std::shared_ptr<UdCapV1Core>> cores;
+        cores.push_back(mHandCoreLeft);
+        cores.push_back(mHandCoreRight);
+        mFirmwareDialog = std::make_unique<FirmwareDialog>(cores);
+        mFirmwareDialog->set_transient_for(*this);
+        mFirmwareDialog->show();
+    });
+    add_action(actionFirmware);
     auto actionDataTransfer = Gio::SimpleAction::create("settings.data_transfer");
     actionDataTransfer->signal_activate().connect([this](const Glib::VariantBase&) {
         mDataTransferDialog = std::make_unique<DataTransferDialog>([this](bool enable, std::string host, uint16_t port) {
-            // TODO Save
+            UserConfig::getInstance().getTree().put("consumer.vmc.enabled", static_cast<bool>(enable));
+            UserConfig::getInstance().getTree().put("consumer.vmc.host", static_cast<std::string>(host));
+            UserConfig::getInstance().getTree().put("consumer.vmc.port", static_cast<int>(port));
+            UserConfig::getInstance().save();
             setupVMCSender(enable, host, port);
         },[this](bool enable, std::string host, uint16_t port) {
-            // TODO Save
+            UserConfig::getInstance().getTree().put("consumer.osc.enabled", static_cast<bool>(enable));
+            UserConfig::getInstance().getTree().put("consumer.osc.host", static_cast<std::string>(host));
+            UserConfig::getInstance().getTree().put("consumer.osc.port", static_cast<int>(port));
+            UserConfig::getInstance().save();
             setupOSCSender(enable, host, port);
         },[this](bool enable, std::string host, uint16_t port) {
-            // TODO Save
+            UserConfig::getInstance().getTree().put("consumer.udCapQingTong.enabled", static_cast<bool>(enable));
+            UserConfig::getInstance().getTree().put("consumer.udCapQingTong.host", static_cast<std::string>(host));
+            UserConfig::getInstance().getTree().put("consumer.udCapQingTong.port", static_cast<int>(port));
+            UserConfig::getInstance().save();
             setupUdcapQTSender(enable, host, port);
         },[this](bool enable) {
-            // TODO
+            UserConfig::getInstance().getTree().put("consumer.vr.enabled", static_cast<bool>(enable));
+            UserConfig::getInstance().save();
+            setupVRSender(enable);
         });
         mDataTransferDialog->set_transient_for(*this);
         mDataTransferDialog->show();

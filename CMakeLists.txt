@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.27.8)
+cmake_minimum_required(VERSION 3.29)
 project(UdCapCommunityDriverUI)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -14,12 +14,6 @@ find_package(PkgConfig)
 pkg_check_modules(GTKMM_VARS REQUIRED IMPORTED_TARGET gtkmm-4.0)
 
 find_package(assimp CONFIG REQUIRED)
-CPMAddPackage(
-        NAME config-cxx
-        GITHUB_REPOSITORY cieslarmichal/config-cxx
-        GIT_TAG main
-        OPTIONS "BUILD_CONFIG_CXX_TESTS OFF"
-)
 CPMAddPackage(
         NAME threepp
         GITHUB_REPOSITORY cubesky/threepp
@@ -37,8 +31,16 @@ CPMAddPackage(
         VERSION 1.88.0 # Versions less than 1.85.0 may need patches for installation targets.
         URL https://github.com/boostorg/boost/releases/download/boost-1.88.0/boost-1.88.0-cmake.tar.xz
         OPTIONS "BOOST_ENABLE_CMAKE ON" "BOOST_SKIP_INSTALL_RULES ON" # Set `OFF` for installation
-        "BUILD_SHARED_LIBS OFF" "BOOST_INCLUDE_LIBRARIES container\\\;asio\\\;optional\\\;date_time" # Note the escapes!
+        "BUILD_SHARED_LIBS OFF" "BOOST_INCLUDE_LIBRARIES container\\\;asio\\\;optional\\\;date_time\\\;property_tree" # Note the escapes!
 )
+CPMAddPackage(
+        NAME platformdirs
+        GIT_TAG main
+        GITHUB_REPOSITORY jcbhmr/platformdirs-cpp
+)
+IF (platformdirs_ADDED)
+    target_include_directories(platformdirs PUBLIC ${platformdirs_SOURCE_DIR}/include)
+ENDIF ()
 find_package(RapidJSON CONFIG REQUIRED)
 include_directories(${oscpp_SOURCE_DIR}/include)
 find_package(OpenGL REQUIRED)
@@ -55,5 +57,5 @@ IF (WIN32)
 ELSE ()
     add_executable(UdCapCommunityDriverUI ${SRC_FILES})
 ENDIF ()
-target_link_libraries(UdCapCommunityDriverUI PRIVATE OpenGL::GL OpenGL::GLU config-cxx PkgConfig::GTKMM_VARS threepp assimp::assimp UdCapCommunityDriverCore SerialReborn RapidJSON rapidjson)
+target_link_libraries(UdCapCommunityDriverUI PRIVATE OpenGL::GL OpenGL::GLU PkgConfig::GTKMM_VARS threepp assimp::assimp UdCapCommunityDriverCore SerialReborn RapidJSON rapidjson platformdirs::platformdirs Boost::property_tree)
 
