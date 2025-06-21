@@ -3,6 +3,7 @@
 //
 
 #include "DataTransferDialog.h"
+#include "components/UserConfig.h"
 #include <regex>
 #include <iostream>
 
@@ -142,11 +143,21 @@ DataTransferDialog::DataTransferDialog(std::function<void(bool enable, std::stri
     vbox.set_spacing(10);
     vbox.set_margin(10);
 
-    auto row1 = Gtk::make_managed<FeatureRow>(false, "VMC", "127.0.0.1", 39540, vmcCallback);
+    auto row1 = Gtk::make_managed<FeatureRow>(UserConfig::getInstance().getTree().get_optional<bool>("consumer.vmc.enabled").value_or(false),
+                                              "VMC",
+                                              UserConfig::getInstance().getTree().get_optional<std::string>("consumer.vmc.host").value_or("127.0.0.1"),
+                                              UserConfig::getInstance().getTree().get_optional<int>("consumer.vmc.port").value_or(39540), vmcCallback);
 
-    auto row2 = Gtk::make_managed<FeatureRow>(false, "VRChat OSC", "127.0.0.1", 9000,oscCallback);
+    auto row2 = Gtk::make_managed<FeatureRow>(UserConfig::getInstance().getTree().get_optional<bool>("consumer.osc.enabled").value_or(false),
+                                              "VRChat OSC",
+                                              UserConfig::getInstance().getTree().get_optional<std::string>("consumer.osc.host").value_or("127.0.0.1"),
+                                              UserConfig::getInstance().getTree().get_optional<int>("consumer.osc.port").value_or(9000)
+                                              ,oscCallback);
 
-    auto row3 = Gtk::make_managed<FeatureRow>(false, "UdCapQT", "127.0.0.1", 6666, broadcastCallback);
+    auto row3 = Gtk::make_managed<FeatureRow>(UserConfig::getInstance().getTree().get_optional<bool>("consumer.udCapQingTong.enabled").value_or(false), "UdCapQT",
+                                              UserConfig::getInstance().getTree().get_optional<std::string>("consumer.udCapQingTong.host").value_or("127.0.0.1"),
+                                              UserConfig::getInstance().getTree().get_optional<int>("consumer.udCapQingTong.port").value_or(6666)
+                                              , broadcastCallback);
 
     vbox.append(*row1);
     vbox.append(*row2);

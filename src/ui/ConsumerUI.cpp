@@ -250,6 +250,7 @@ ConsumerUI::ConsumerUI(std::shared_ptr<Gtk::Application> app):
             }
         }
     });
+    eventThread.detach();
 
     setupVMCSender(
             UserConfig::getInstance().getTree().get_optional<bool>("consumer.vmc.enabled").value_or(false),
@@ -268,10 +269,7 @@ ConsumerUI::ConsumerUI(std::shared_ptr<Gtk::Application> app):
 }
 
 ConsumerUI::~ConsumerUI() {
-    eventRunning = false;
-    if (eventThread.joinable()) {
-        eventThread.join();
-    }
+
 }
 
 void ConsumerUI::runOnUIThread(std::function<void()> callEvent) {
@@ -281,7 +279,6 @@ void ConsumerUI::runOnUIThread(std::function<void()> callEvent) {
 }
 
 void ConsumerUI::allReady() {
-    std::lock_guard lk(uiMutex);
     if (leftReady && rightReady) {
         runOnUIThread([this]() {
             mStatus.set_markup(_("<span font='18' weight='bold'>Ready</span>"));
