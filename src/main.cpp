@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
     }
     std::cout << "Config directory: " << UserConfig::getInstance().getConfigDirPath() << std::endl;
 
-    int configVersion = static_cast<int>(UserConfig::getInstance().getTree().get_optional<int>("core.configVersion").value_or(0));
+    int configVersion = UserConfig::getInstance().get<int>("/core/configVersion", 0);
     if (configVersion < 1) {
         std::shared_ptr<bool> resultFlag = std::make_shared<bool>(false);
         app->make_window_and_run<FirstRunUI>(argc, argv, resultFlag);
@@ -35,8 +35,7 @@ int main(int argc, char* argv[]) {
     }
 
     CorePref::getInstance().setDefaultPrefPath(UserConfig::getInstance().getConfigCoreDirPath());
-    UdCapDriverType driverType = static_cast<UdCapDriverType>(UserConfig::getInstance().getTree().get_optional<int>("core.driverType").value_or(
-            UdCapDriverType::UD_CAP_DRIVER_TYPE_CONSUMER));
+    UdCapDriverType driverType = static_cast<UdCapDriverType>(UserConfig::getInstance().get<int>("/core/driverType", static_cast<int>(UdCapDriverType::UD_CAP_DRIVER_TYPE_CONSUMER)));
     if (driverType == UdCapDriverType::UD_CAP_DRIVER_TYPE_ENTERPRISE) {
         return app->make_window_and_run<EnterpriseUI>(argc, argv, app);
     } else if (driverType == UdCapDriverType::UD_CAP_DRIVER_TYPE_CONSUMER) {

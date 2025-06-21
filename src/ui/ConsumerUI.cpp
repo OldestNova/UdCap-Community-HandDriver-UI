@@ -252,20 +252,10 @@ ConsumerUI::ConsumerUI(std::shared_ptr<Gtk::Application> app):
     });
     eventThread.detach();
 
-    setupVMCSender(
-            UserConfig::getInstance().getTree().get_optional<bool>("consumer.vmc.enabled").value_or(false),
-            UserConfig::getInstance().getTree().get_optional<std::string>("consumer.vmc.host").value_or("127.0.0.1"),
-            static_cast<uint16_t>(UserConfig::getInstance().getTree().get_optional<int>("consumer.vmc.port").value_or(39540)));
-    setupOSCSender(
-            UserConfig::getInstance().getTree().get_optional<bool>("consumer.osc.enabled").value_or(false),
-            UserConfig::getInstance().getTree().get_optional<std::string>("consumer.osc.host").value_or("127.0.0.1"),
-            static_cast<uint16_t>(UserConfig::getInstance().getTree().get_optional<int>("consumer.osc.port").value_or(9000)));
-    setupUdcapQTSender(
-            UserConfig::getInstance().getTree().get_optional<bool>("consumer.udCapQingTong.enabled").value_or(false),
-            UserConfig::getInstance().getTree().get_optional<std::string>("consumer.udCapQingTong.host").value_or("127.0.0.1"),
-            static_cast<uint16_t>(UserConfig::getInstance().getTree().get_optional<int>("consumer.udCapQingTong.port").value_or(6666)));
-    setupVRSender(
-            UserConfig::getInstance().getTree().get_optional<bool>("consumer.vr.enabled").value_or(false));
+    setupVMCSender();
+    setupOSCSender();
+    setupUdcapQTSender();
+    setupVRSender();
 }
 
 ConsumerUI::~ConsumerUI() {
@@ -284,20 +274,10 @@ void ConsumerUI::allReady() {
             mStatus.set_markup(_("<span font='18' weight='bold'>Ready</span>"));
             mDescription.set_text(_("UdCap running normally."));
         });
-        setupVMCSender(
-                UserConfig::getInstance().getTree().get_optional<bool>("consumer.vmc.enabled").value_or(false),
-                UserConfig::getInstance().getTree().get_optional<std::string>("consumer.vmc.host").value_or("127.0.0.1"),
-                static_cast<uint16_t>(UserConfig::getInstance().getTree().get_optional<int>("consumer.vmc.port").value_or(39540)));
-        setupOSCSender(
-                UserConfig::getInstance().getTree().get_optional<bool>("consumer.osc.enabled").value_or(false),
-                UserConfig::getInstance().getTree().get_optional<std::string>("consumer.osc.host").value_or("127.0.0.1"),
-                static_cast<uint16_t>(UserConfig::getInstance().getTree().get_optional<int>("consumer.osc.port").value_or(9000)));
-        setupUdcapQTSender(
-                UserConfig::getInstance().getTree().get_optional<bool>("consumer.udCapQingTong.enabled").value_or(false),
-                UserConfig::getInstance().getTree().get_optional<std::string>("consumer.udCapQingTong.host").value_or("127.0.0.1"),
-                static_cast<uint16_t>(UserConfig::getInstance().getTree().get_optional<int>("consumer.udCapQingTong.port").value_or(6666)));
-        setupVRSender(
-                UserConfig::getInstance().getTree().get_optional<bool>("consumer.vr.enabled").value_or(false));
+        setupVMCSender();
+        setupOSCSender();
+        setupUdcapQTSender();
+        setupVRSender();
     }
 }
 
@@ -322,28 +302,28 @@ void ConsumerUI::buildMenu() {
     add_action(actionFirmware);
     auto actionDataTransfer = Gio::SimpleAction::create("settings.data_transfer");
     actionDataTransfer->signal_activate().connect([this](const Glib::VariantBase&) {
-        mDataTransferDialog = std::make_unique<DataTransferDialog>([this](bool enable, std::string host, uint16_t port) {
-            UserConfig::getInstance().getTree().put("consumer.vmc.enabled", static_cast<bool>(enable));
-            UserConfig::getInstance().getTree().put("consumer.vmc.host", static_cast<std::string>(host));
-            UserConfig::getInstance().getTree().put("consumer.vmc.port", static_cast<int>(port));
+        mDataTransferDialog = std::make_unique<DataTransferDialog>("/consumer", [this](bool enable, std::string host, uint16_t port) {
+            UserConfig::getInstance().set<bool>("/consumer/vmc/enabled", enable);
+            UserConfig::getInstance().set<std::string>("/consumer/vmc/host", host);
+            UserConfig::getInstance().set<int>("/consumer/vmc/port", port);
             UserConfig::getInstance().save();
-            setupVMCSender(enable, host, port);
+            setupVMCSender();
         },[this](bool enable, std::string host, uint16_t port) {
-            UserConfig::getInstance().getTree().put("consumer.osc.enabled", static_cast<bool>(enable));
-            UserConfig::getInstance().getTree().put("consumer.osc.host", static_cast<std::string>(host));
-            UserConfig::getInstance().getTree().put("consumer.osc.port", static_cast<int>(port));
+            UserConfig::getInstance().set<bool>("/consumer/osc/enabled", enable);
+            UserConfig::getInstance().set<std::string>("/consumer/osc/host", host);
+            UserConfig::getInstance().set<int>("/consumer/osc/port", port);
             UserConfig::getInstance().save();
-            setupOSCSender(enable, host, port);
+            setupOSCSender();
         },[this](bool enable, std::string host, uint16_t port) {
-            UserConfig::getInstance().getTree().put("consumer.udCapQingTong.enabled", static_cast<bool>(enable));
-            UserConfig::getInstance().getTree().put("consumer.udCapQingTong.host", static_cast<std::string>(host));
-            UserConfig::getInstance().getTree().put("consumer.udCapQingTong.port", static_cast<int>(port));
+            UserConfig::getInstance().set<bool>("/consumer/udCapQingTong/enabled", enable);
+            UserConfig::getInstance().set<std::string>("/consumer/udCapQingTong/host", host);
+            UserConfig::getInstance().set<int>("/consumer/udCapQingTong/port", port);
             UserConfig::getInstance().save();
-            setupUdcapQTSender(enable, host, port);
+            setupUdcapQTSender();
         },[this](bool enable) {
-            UserConfig::getInstance().getTree().put("consumer.vr.enabled", static_cast<bool>(enable));
+            UserConfig::getInstance().set<bool>("/consumer/vr/enabled", enable);
             UserConfig::getInstance().save();
-            setupVRSender(enable);
+            setupVRSender();
         });
         mDataTransferDialog->set_transient_for(*this);
         mDataTransferDialog->show();
@@ -351,8 +331,11 @@ void ConsumerUI::buildMenu() {
     add_action(actionDataTransfer);
 }
 
-void ConsumerUI::setupVMCSender(bool enable, std::string host, uint16_t port) {
-    runOnUIThread([this, enable, host, port](){
+void ConsumerUI::setupVMCSender() {
+    runOnUIThread([this]() {
+        bool enable = UserConfig::getInstance().get<bool>("/consumer/vmc/enabled", false);
+        std::string host = UserConfig::getInstance().get<std::string>("/consumer/vmc/host", "127.0.0.1");
+        int port = UserConfig::getInstance().get<int>("/consumer/vmc/port", 39540);
         if (enable) {
             if (mLeftState != UD_INIT_STATE_LINKED || mRightState != UD_INIT_STATE_LINKED) {
                 mVMC.set(create_placeholder_green_image());
@@ -375,8 +358,11 @@ void ConsumerUI::setupVMCSender(bool enable, std::string host, uint16_t port) {
     });
 }
 
-void ConsumerUI::setupOSCSender(bool enable, std::string host, uint16_t port) {
-    runOnUIThread([this, enable, host, port](){
+void ConsumerUI::setupOSCSender() {
+    runOnUIThread([this](){
+        bool enable = UserConfig::getInstance().get<bool>("/consumer/osc/enabled", false);
+        std::string host = UserConfig::getInstance().get<std::string>("/consumer/osc/host", "127.0.0.1");
+        int port = UserConfig::getInstance().get<int>("/consumer/osc/port", 9000);
         if (enable) {
             if (mLeftState != UD_INIT_STATE_LINKED || mRightState != UD_INIT_STATE_LINKED) {
                 mOSC.set(create_placeholder_green_image());
@@ -399,8 +385,11 @@ void ConsumerUI::setupOSCSender(bool enable, std::string host, uint16_t port) {
     });
 }
 
-void ConsumerUI::setupUdcapQTSender(bool enable, std::string host, uint16_t port) {
-    runOnUIThread([this, enable, host, port](){
+void ConsumerUI::setupUdcapQTSender() {
+    runOnUIThread([this](){
+        bool enable = UserConfig::getInstance().get<bool>("/consumer/udCapQingTong/enabled", false);
+        std::string host = UserConfig::getInstance().get<std::string>("/consumer/udCapQingTong/host", "127.0.0.1");
+        int port = UserConfig::getInstance().get<int>("/consumer/udCapQingTong/port", 6666);
         if (enable) {
             if (mLeftState != UD_INIT_STATE_LINKED || mRightState != UD_INIT_STATE_LINKED) {
                 mBroadcast.set(create_placeholder_green_image());
@@ -423,7 +412,7 @@ void ConsumerUI::setupUdcapQTSender(bool enable, std::string host, uint16_t port
     });
 }
 
-void ConsumerUI::setupVRSender(bool enable) {
+void ConsumerUI::setupVRSender() {
 
 }
 

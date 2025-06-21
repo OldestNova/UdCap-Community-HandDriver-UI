@@ -7,16 +7,16 @@
 #include "../config.h"
 
 void writeDefault() {
-    UserConfig::getInstance().getTree().put("consumer.vmc.enabled", static_cast<bool>(false));
-    UserConfig::getInstance().getTree().put("consumer.vmc.host", static_cast<std::string>("127.0.0.1"));
-    UserConfig::getInstance().getTree().put("consumer.vmc.port", static_cast<int>(39540));
-    UserConfig::getInstance().getTree().put("consumer.osc.enabled", static_cast<bool>(false));
-    UserConfig::getInstance().getTree().put("consumer.osc.host", static_cast<std::string>("127.0.0.1"));
-    UserConfig::getInstance().getTree().put("consumer.osc.port", static_cast<int>(9000));
-    UserConfig::getInstance().getTree().put("consumer.udCapQingTong.enabled", static_cast<bool>(false));
-    UserConfig::getInstance().getTree().put("consumer.udCapQingTong.host", static_cast<std::string>("127.0.0.1"));
-    UserConfig::getInstance().getTree().put("consumer.udCapQingTong.port", static_cast<int>(6666));
-    UserConfig::getInstance().getTree().put("consumer.vr.enabled", static_cast<bool>(false));
+    UserConfig::getInstance().set<bool>("/consumer/vmc/enabled", false);
+    UserConfig::getInstance().set<std::string>("/consumer/vmc/host", "127.0.0.1");
+    UserConfig::getInstance().set<int>("/consumer/vmc/port", 39540);
+    UserConfig::getInstance().set<bool>("/consumer/osc/enabled", false);
+    UserConfig::getInstance().set<std::string>("/consumer/osc/host", "127.0.0.1");
+    UserConfig::getInstance().set<int>("/consumer/osc/port", 9000);
+    UserConfig::getInstance().set<bool>("/consumer/udCapQingTong/enabled", false);
+    UserConfig::getInstance().set<std::string>("/consumer/udCapQingTong/host", "127.0.0.1");
+    UserConfig::getInstance().set<int>("/consumer/udCapQingTong/port", 6666);
+    UserConfig::getInstance().set<bool>("/consumer/vr/enabled", false);
 }
 
 FirstRunUI::FirstRunUI(std::shared_ptr<bool> resultFlag) {
@@ -46,8 +46,8 @@ FirstRunUI::FirstRunUI(std::shared_ptr<bool> resultFlag) {
     buttonAdvanced.set_label(_("Advanced"));
 
     buttonSimple.signal_clicked().connect([this, resultFlag]() {
-        UserConfig::getInstance().getTree().put("core.configVersion", static_cast<int>(1));
-        UserConfig::getInstance().getTree().put("core.driverType", static_cast<int>(UdCapDriverType::UD_CAP_DRIVER_TYPE_CONSUMER));
+        UserConfig::getInstance().set<int>("/core/configVersion", 1);
+        UserConfig::getInstance().set<int>("/core/driverType", static_cast<int>(UdCapDriverType::UD_CAP_DRIVER_TYPE_CONSUMER));
         writeDefault();
         UserConfig::getInstance().save();
         *resultFlag = true;
@@ -55,8 +55,8 @@ FirstRunUI::FirstRunUI(std::shared_ptr<bool> resultFlag) {
     });
 
     buttonAdvanced.signal_clicked().connect([this, resultFlag]() {
-        UserConfig::getInstance().getTree().put("core.configVersion", static_cast<int>(1));
-        UserConfig::getInstance().getTree().put("core.driverType", static_cast<int>(UdCapDriverType::UD_CAP_DRIVER_TYPE_ENTERPRISE));
+        UserConfig::getInstance().set<int>("/core/configVersion",1);
+        UserConfig::getInstance().set<int>("/core/driverType", static_cast<int>(UdCapDriverType::UD_CAP_DRIVER_TYPE_ENTERPRISE));
         writeDefault();
         UserConfig::getInstance().save();
         *resultFlag = true;

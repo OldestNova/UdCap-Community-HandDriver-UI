@@ -127,7 +127,8 @@ private:
 };
 
 
-DataTransferDialog::DataTransferDialog(std::function<void(bool enable, std::string host, uint16_t port)> _vmcCallback,
+DataTransferDialog::DataTransferDialog(std::string configPrefix,
+        std::function<void(bool enable, std::string host, uint16_t port)> _vmcCallback,
                                        std::function<void(bool enable, std::string host, uint16_t port)> _oscCallback,
                                        std::function<void(bool enable, std::string host, uint16_t port)> _broadcastCallback,
                                        std::function<void(bool enable)> _vrCallback):
@@ -143,20 +144,20 @@ DataTransferDialog::DataTransferDialog(std::function<void(bool enable, std::stri
     vbox.set_spacing(10);
     vbox.set_margin(10);
 
-    auto row1 = Gtk::make_managed<FeatureRow>(UserConfig::getInstance().getTree().get_optional<bool>("consumer.vmc.enabled").value_or(false),
+    auto row1 = Gtk::make_managed<FeatureRow>(UserConfig::getInstance().get<bool>(configPrefix + "/vmc/enabled", false),
                                               "VMC",
-                                              UserConfig::getInstance().getTree().get_optional<std::string>("consumer.vmc.host").value_or("127.0.0.1"),
-                                              UserConfig::getInstance().getTree().get_optional<int>("consumer.vmc.port").value_or(39540), vmcCallback);
+                                              UserConfig::getInstance().get<std::string>(configPrefix + "/vmc/host", "127.0.0.1"),
+                                              UserConfig::getInstance().get<int>(configPrefix + "/vmc/port", 39540), vmcCallback);
 
-    auto row2 = Gtk::make_managed<FeatureRow>(UserConfig::getInstance().getTree().get_optional<bool>("consumer.osc.enabled").value_or(false),
+    auto row2 = Gtk::make_managed<FeatureRow>(UserConfig::getInstance().get<bool>(configPrefix + "/osc/enabled", false),
                                               "VRChat OSC",
-                                              UserConfig::getInstance().getTree().get_optional<std::string>("consumer.osc.host").value_or("127.0.0.1"),
-                                              UserConfig::getInstance().getTree().get_optional<int>("consumer.osc.port").value_or(9000)
+                                              UserConfig::getInstance().get<std::string>(configPrefix + "/osc/host", "127.0.0.1"),
+                                              UserConfig::getInstance().get<int>(configPrefix + "/osc/port", 9000)
                                               ,oscCallback);
 
-    auto row3 = Gtk::make_managed<FeatureRow>(UserConfig::getInstance().getTree().get_optional<bool>("consumer.udCapQingTong.enabled").value_or(false), "UdCapQT",
-                                              UserConfig::getInstance().getTree().get_optional<std::string>("consumer.udCapQingTong.host").value_or("127.0.0.1"),
-                                              UserConfig::getInstance().getTree().get_optional<int>("consumer.udCapQingTong.port").value_or(6666)
+    auto row3 = Gtk::make_managed<FeatureRow>(UserConfig::getInstance().get<bool>(configPrefix + "/udCapQingTong/enabled", false), "UdCapQT",
+                                              UserConfig::getInstance().get<std::string>(configPrefix + "/udCapQingTong/host", "127.0.0.1"),
+                                              UserConfig::getInstance().get<int>(configPrefix + "/udCapQingTong/port", 6666)
                                               , broadcastCallback);
 
     vbox.append(*row1);

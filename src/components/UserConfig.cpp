@@ -11,15 +11,11 @@ UserConfig &UserConfig::getInstance() {
 
 void UserConfig::load() {
     std::lock_guard<std::mutex> lock(mutex_);
-
     std::ifstream file(configFilePath_);
     if (file.good()) {
-        try {
-            boost::property_tree::read_json(file, pt_);
-            configExists_ = true;
-        } catch (const boost::property_tree::json_parser::json_parser_error& e) {
-            configExists_ = false;
-        }
+        rapidjson::IStreamWrapper isw(file);
+        document.ParseStream(isw);
+        configExists_ = true;
     } else {
         configExists_ = false;
     }
@@ -28,11 +24,9 @@ void UserConfig::load() {
 void UserConfig::save() {
     std::lock_guard<std::mutex> lock(mutex_);
     std::ofstream file(configFilePath_);
-    boost::property_tree::write_json(file, pt_);
-}
-
-boost::property_tree::ptree& UserConfig::getTree() {
-    return pt_;
+    rapidjson::OStreamWrapper osw(file);
+    rapidjson::Writer<rapidjson::OStreamWrapper> writer(osw);
+    document.Accept(writer);
 }
 
 std::string UserConfig::getConfigDirPath() const {

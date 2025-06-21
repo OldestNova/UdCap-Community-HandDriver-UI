@@ -79,10 +79,10 @@ private:
     std::mutex eventWaitMutex;
     bool eventRunning = true;
     void runOnUIThread(std::function<void()>);
-    void setupVMCSender(bool enable, std::string host, uint16_t port);
-    void setupOSCSender(bool enable, std::string host, uint16_t port);
-    void setupUdcapQTSender(bool enable, std::string host, uint16_t port);
-    void setupVRSender(bool enable);
+    void setupVMCSender();
+    void setupOSCSender();
+    void setupUdcapQTSender();
+    void setupVRSender();
 protected:
     bool on_gl_render(const Glib::RefPtr<Gdk::GLContext>& context);
     void on_gl_realize();

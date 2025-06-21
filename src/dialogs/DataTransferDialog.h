@@ -14,7 +14,8 @@
 
 class DataTransferDialog: public Gtk::Window {
 public:
-    explicit DataTransferDialog(std::function<void(bool enable, std::string host, uint16_t port)> _vmcCallback,
+    explicit DataTransferDialog(std::string configPrefix,
+                                std::function<void(bool enable, std::string host, uint16_t port)> _vmcCallback,
                                 std::function<void(bool enable, std::string host, uint16_t port)> _oscCallback,
                                 std::function<void(bool enable, std::string host, uint16_t port)> _broadcastCallback,
                                 std::function<void(bool enable)> _vrCallback);

@@ -29,7 +29,6 @@
  * OpenGL
  * gtkmm-4
  * rapidjson
- * Boost (CPM 自动下载)
  * platformdirs (CPM 自动下载)
  * threepp (CPM 自动下载)
  * oscpp (CPM 自动下载)

@@ -27,13 +27,6 @@ CPMAddPackage(
         DOWNLOAD_ONLY ON
 )
 CPMAddPackage(
-        NAME Boost
-        VERSION 1.88.0 # Versions less than 1.85.0 may need patches for installation targets.
-        URL https://github.com/boostorg/boost/releases/download/boost-1.88.0/boost-1.88.0-cmake.tar.xz
-        OPTIONS "BOOST_ENABLE_CMAKE ON" "BOOST_SKIP_INSTALL_RULES ON" # Set `OFF` for installation
-        "BUILD_SHARED_LIBS OFF" "BOOST_INCLUDE_LIBRARIES container\\\;asio\\\;optional\\\;date_time\\\;property_tree" # Note the escapes!
-)
-CPMAddPackage(
         NAME platformdirs
         GIT_TAG main
         GITHUB_REPOSITORY jcbhmr/platformdirs-cpp
@@ -57,5 +50,5 @@ IF (WIN32)
 ELSE ()
     add_executable(UdCapCommunityDriverUI ${SRC_FILES})
 ENDIF ()
-target_link_libraries(UdCapCommunityDriverUI PRIVATE OpenGL::GL OpenGL::GLU PkgConfig::GTKMM_VARS threepp assimp::assimp UdCapCommunityDriverCore SerialReborn RapidJSON rapidjson platformdirs::platformdirs Boost::property_tree)
+target_link_libraries(UdCapCommunityDriverUI PRIVATE OpenGL::GL OpenGL::GLU PkgConfig::GTKMM_VARS threepp assimp::assimp UdCapCommunityDriverCore SerialReborn RapidJSON rapidjson platformdirs::platformdirs)
 
