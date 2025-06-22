@@ -52,6 +52,7 @@ private:
     float leftButtonTrackpad = 0;
     float leftButtonGrip = 0;
     float leftButtonTrigger = 0;
+    float leftButtonPower = 0;
     float leftTrackpad = 0;
     float leftGrip = 0;
     float leftTrigger = 0;
@@ -66,6 +67,7 @@ private:
     float rightButtonTrackpad = 0;
     float rightButtonGrip = 0;
     float rightButtonTrigger = 0;
+    float rightButtonPower = 0;
     float rightTrackpad = 0;
     float rightGrip = 0;
     float rightTrigger = 0;

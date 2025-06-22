@@ -178,6 +178,7 @@ VMCSender::VMCSender(std::string _host, uint16_t _port): host(_host), port(_port
                         leftTrigger = data->button.trigger;
                         leftGrip = data->button.grip;
                         leftTrackpad = data->button.trackpad;
+                        leftButtonPower = data->button.btnPower ? 1.0f : 0.0f;
                     } else {
                         rightButtonA = data->button.btnA ? 1.0f : 0.0f;
                         rightButtonB = data->button.btnB ? 1.0f : 0.0f;
@@ -189,6 +190,7 @@ VMCSender::VMCSender(std::string _host, uint16_t _port): host(_host), port(_port
                         rightTrigger = data->button.trigger;
                         rightGrip = data->button.grip;
                         rightTrackpad = data->button.trackpad;
+                        rightButtonPower = data->button.btnPower ? 1.0f : 0.0f;
                     }
                     updateController();
                 }
@@ -261,8 +263,8 @@ void VMCSender::add(std::shared_ptr<UdCapV1Core> _core) {
 }
 
 void VMCSender::updateController() {
-    char buffer[128 * 16] = {0};
-    OSCPP::Client::Packet packet(buffer, 128 * 15);
+    char buffer[4096] = {0};
+    OSCPP::Client::Packet packet(buffer, 4096);
     uint64_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::system_clock::now().time_since_epoch()).count();
     packet.openBundle(timestamp)
@@ -277,6 +279,7 @@ void VMCSender::updateController() {
             .openMessage("/VMC/Ext/Blend/Val", 2).string("LeftButton_Trackpad").float32(leftButtonTrackpad).closeMessage()
             .openMessage("/VMC/Ext/Blend/Val", 2).string("LeftButton_Grip").float32(leftButtonGrip).closeMessage()
             .openMessage("/VMC/Ext/Blend/Val", 2).string("LeftButton_Trigger").float32(leftButtonTrigger).closeMessage()
+            .openMessage("/VMC/Ext/Blend/Val", 2).string("LeftButton_Power").float32(leftButtonPower).closeMessage()
             .openMessage("/VMC/Ext/Blend/Val", 2).string("LeftValue_Trackpad").float32(leftTrackpad).closeMessage()
             .openMessage("/VMC/Ext/Blend/Val", 2).string("LeftValue_Grip").float32(leftGrip).closeMessage()
             .openMessage("/VMC/Ext/Blend/Val", 2).string("LeftValue_Trigger").float32(leftTrigger).closeMessage()
@@ -291,6 +294,7 @@ void VMCSender::updateController() {
             .openMessage("/VMC/Ext/Blend/Val", 2).string("RightButton_Trackpad").float32(rightButtonTrackpad).closeMessage()
             .openMessage("/VMC/Ext/Blend/Val", 2).string("RightButton_Grip").float32(rightButtonGrip).closeMessage()
             .openMessage("/VMC/Ext/Blend/Val", 2).string("RightButton_Trigger").float32(rightButtonTrigger).closeMessage()
+            .openMessage("/VMC/Ext/Blend/Val", 2).string("RightButton_Power").float32(rightButtonPower).closeMessage()
             .openMessage("/VMC/Ext/Blend/Val", 2).string("RightValue_Trackpad").float32(rightTrackpad).closeMessage()
             .openMessage("/VMC/Ext/Blend/Val", 2).string("RightValue_Grip").float32(rightGrip).closeMessage()
             .openMessage("/VMC/Ext/Blend/Val", 2).string("RightValue_Trigger").float32(rightTrigger).closeMessage()

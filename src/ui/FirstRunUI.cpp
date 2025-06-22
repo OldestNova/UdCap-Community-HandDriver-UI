@@ -48,6 +48,7 @@ FirstRunUI::FirstRunUI(std::shared_ptr<bool> resultFlag) {
     buttonSimple.signal_clicked().connect([this, resultFlag]() {
         UserConfig::getInstance().set<int>("/core/configVersion", 1);
         UserConfig::getInstance().set<int>("/core/driverType", static_cast<int>(UdCapDriverType::UD_CAP_DRIVER_TYPE_CONSUMER));
+        UserConfig::getInstance().set<bool>("/core/shareCalibrateData", false);
         writeDefault();
         UserConfig::getInstance().save();
         *resultFlag = true;
@@ -57,6 +58,7 @@ FirstRunUI::FirstRunUI(std::shared_ptr<bool> resultFlag) {
     buttonAdvanced.signal_clicked().connect([this, resultFlag]() {
         UserConfig::getInstance().set<int>("/core/configVersion",1);
         UserConfig::getInstance().set<int>("/core/driverType", static_cast<int>(UdCapDriverType::UD_CAP_DRIVER_TYPE_ENTERPRISE));
+        UserConfig::getInstance().set<bool>("/core/shareCalibrateData", false);
         writeDefault();
         UserConfig::getInstance().save();
         *resultFlag = true;

@@ -1,7 +1,5 @@
 #include <iostream>
 #include <optional>
-#include <filesystem>
-#include "main.h"
 #include "ui/ConsumerUI.h"
 #include "ui/EnterpriseUI.h"
 #include "ui/CalibrationUI.h"
@@ -33,8 +31,9 @@ int main(int argc, char* argv[]) {
     } else {
         // Update config if needed
     }
-
-    CorePref::getInstance().setDefaultPrefPath(UserConfig::getInstance().getConfigCoreDirPath());
+    if (!UserConfig::getInstance().get<bool>("/core/shareCalibrateData", false)) {
+        CorePref::getInstance().setDefaultPrefPath(UserConfig::getInstance().getConfigCoreDirPath());
+    }
     UdCapDriverType driverType = static_cast<UdCapDriverType>(UserConfig::getInstance().get<int>("/core/driverType", static_cast<int>(UdCapDriverType::UD_CAP_DRIVER_TYPE_CONSUMER)));
     if (driverType == UdCapDriverType::UD_CAP_DRIVER_TYPE_ENTERPRISE) {
         return app->make_window_and_run<EnterpriseUI>(argc, argv, app);
