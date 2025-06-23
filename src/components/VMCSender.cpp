@@ -298,7 +298,7 @@ void VMCSender::updateController() {
             .openMessage("/VMC/Ext/Blend/Val", 2).string("RightValue_Trackpad").float32(rightTrackpad).closeMessage()
             .openMessage("/VMC/Ext/Blend/Val", 2).string("RightValue_Grip").float32(rightGrip).closeMessage()
             .openMessage("/VMC/Ext/Blend/Val", 2).string("RightValue_Trigger").float32(rightTrigger).closeMessage()
-            .openMessage("/VMC/Ext/Blend/Apply", 0)
+            .openMessage("/VMC/Ext/Blend/Apply", 0).closeMessage()
             .closeBundle();
     try {
         socket.send_to(boost::asio::buffer(packet.data(), packet.size()), *endpoints.begin());
