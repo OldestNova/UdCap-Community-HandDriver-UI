@@ -21,6 +21,8 @@ enum CalibrationStep {
 class CalibrationUI: public Gtk::Window {
 public:
     explicit CalibrationUI(std::vector<std::shared_ptr<UdCapV1Core>> _core);
+    void startProcess();
+    void stopProcess();
 private:
     std::vector<std::shared_ptr<UdCapV1Core>> core;
     Gtk::Box mVbox;
@@ -45,8 +47,6 @@ private:
     int calibrationSubStep = 10;
     CalibrationStep currentCalibrationStep = CALIBRATION_STEP_FIST;
     bool on_calibration_progressbar_timeout();
-    void startProcess();
-    void stopProcess();
 };
 
 
