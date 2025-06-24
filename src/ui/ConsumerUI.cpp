@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <regex>
 #include "ConsumerUI.h"
 #include "../components/UserConfig.h"
 #include "UsbEnumerate.h"
@@ -163,26 +164,54 @@ ConsumerUI::ConsumerUI(std::shared_ptr<Gtk::Application> app):
                      if (recv.first.ends_with('L') && leftHandSerial == nullptr) {
                          leftHandSerial = recv.second;
                          std::cout << "Found Left Hand Serial: " << recv.first << std::endl;
-                         mLeftHand.set(create_placeholder_green_image());
+                         runOnUIThread([this](){
+                             mLeftHand.set(create_placeholder_green_image());
+                             return false;
+                         });
                      } else if (recv.first.ends_with('R') && rightHandSerial == nullptr) {
                          rightHandSerial = recv.second;
                          std::cout << "Found Right Hand Serial: " << recv.first << std::endl;
-                         mRightHand.set(create_placeholder_green_image());
+                         runOnUIThread([this](){
+                             mRightHand.set(create_placeholder_green_image());
+                             return false;
+                         });
                      }
                      if (leftHandSerial && rightHandSerial) {
-                         std::lock_guard lk(uiMutex);
                          mHandCoreLeft = std::make_shared<UdCapV1Core>(leftHandSerial);
                          mHandCoreRight = std::make_shared<UdCapV1Core>(rightHandSerial);
-                         mStatus.set_markup(_("<span font='18' weight='bold'>Found</span>"));
-                         mDescription.set_text(_("Waiting for UdCap Gloves..."));
-                         mCalibrate.set_sensitive(false);
+                         runOnUIThread([this](){
+                             mStatus.set_markup(_("<span font='18' weight='bold'>Found</span>"));
+                             mDescription.set_text(_("Waiting for UdCap Gloves..."));
+                             mCalibrate.set_sensitive(false);
+                             return false;
+                         });
                          mHandCoreLeft->listen([&](std::shared_ptr<UdCapV1MCUPacket> data) {
                              if (data->commandType == CMD_LINK_STATE) {
                                  mLeftState = data->udState;
                                 switch (data->udState) {
                                     case UD_INIT_STATE_LINKED:
                                     {
-                                        mLeftHand.set(create_placeholder_blue_image());
+                                        runOnUIThread([this](){
+                                            mLeftHand.set(create_placeholder_blue_image());
+                                            return false;
+                                        });
+                                        mHandCoreLeft->tryRestoreHandCalibration();
+                                        break;
+                                    }
+                                    case UD_INIT_STATE_NOT_CONNECT:
+                                    {
+                                        runOnUIThread([this]() {
+                                            mLeftHand.set(create_placeholder_green_image());
+                                            return false;
+                                        });
+                                        break;
+                                    }
+                                    case UD_INIT_STATE_CONNECTED:
+                                    {
+                                        runOnUIThread([this]() {
+                                            mLeftHand.set(create_placeholder_green_image());
+                                            return false;
+                                        });
                                         break;
                                     }
                                     default:
@@ -202,7 +231,27 @@ ConsumerUI::ConsumerUI(std::shared_ptr<Gtk::Application> app):
                                  switch (data->udState) {
                                      case UD_INIT_STATE_LINKED:
                                      {
-                                         mRightHand.set(create_placeholder_blue_image());
+                                         runOnUIThread([this](){
+                                             mRightHand.set(create_placeholder_blue_image());
+                                             return false;
+                                         });
+                                         mHandCoreRight->tryRestoreHandCalibration();
+                                         break;
+                                     }
+                                     case UD_INIT_STATE_NOT_CONNECT:
+                                     {
+                                         runOnUIThread([this]() {
+                                             mRightHand.set(create_placeholder_green_image());
+                                             return false;
+                                         });
+                                         break;
+                                     }
+                                     case UD_INIT_STATE_CONNECTED:
+                                     {
+                                         runOnUIThread([this]() {
+                                             mRightHand.set(create_placeholder_green_image());
+                                             return false;
+                                         });
                                          break;
                                      }
                                      default:
@@ -229,56 +278,113 @@ ConsumerUI::ConsumerUI(std::shared_ptr<Gtk::Application> app):
     });
     probeThread.detach();
 
-    eventThread = std::thread([this](){
-        while (eventRunning) {
-            if (eventQueue.empty()) {
-                std::unique_lock lk(eventWaitMutex);
-                eventCV.wait_for(lk, std::chrono::milliseconds(100));
-                continue;
-            }
-            std::lock_guard lk(eventMutex);
-            if (eventQueue.empty()) {
-                continue;
-            }
-            std::function<void()> event = std::move(eventQueue.front());
-            eventQueue.pop();
-            try {
-                std::lock_guard lku(uiMutex);
-                event();
-            } catch (const std::exception &e) {
-                std::cerr << "Error in event: " << e.what() << std::endl;
-            }
-        }
-    });
-    eventThread.detach();
-
     setupVMCSender();
     setupOSCSender();
     setupUdcapQTSender();
     setupVRSender();
+    OSCServer::getInstance().setCallback([this](std::string address, std::vector<std::any> args){
+        if (address == "/udcap/device/calibrate") {
+            std::vector<std::shared_ptr<UdCapV1Core>> caliCores;
+            std::vector<std::string> caliCoresAdded;
+            bool isRegex = false;
+            bool autoStart = false;
+            if (args[0].has_value() && args[0].type() == typeid(int32_t)) {
+                if (any_cast<int32_t>(args[0]) == 1) {
+                    isRegex = true;
+                }
+            }
+            if (args[1].has_value() && args[1].type() == typeid(int32_t)) {
+                if (any_cast<int32_t>(args[1]) == 1) {
+                    autoStart = true;
+                }
+            }
+            if (args[2].has_value() && args[2].type() == typeid(std::vector<std::string>)) {
+                std::vector<std::string> serials = any_cast<std::vector<std::string>>(args[2]);
+                for (std::string serial: serials) {
+                    if (isRegex) {
+                        std::regex pattern(serial);
+                        if (mHandCoreLeft && std::regex_match(mHandCoreLeft->getUDCapSerial(), pattern) && mLeftState == UD_INIT_STATE_LINKED) {
+                            if (std::find(caliCoresAdded.begin(), caliCoresAdded.end(), mHandCoreLeft->getUDCapSerial()) != caliCoresAdded.end()) {
+                                continue; // Already added
+                            }
+                            caliCoresAdded.push_back(mHandCoreLeft->getUDCapSerial());
+                            caliCores.push_back(mHandCoreLeft);
+                        }
+                        if (mHandCoreRight && std::regex_match(mHandCoreRight->getUDCapSerial(), pattern) && mRightState == UD_INIT_STATE_LINKED) {
+                            if (std::find(caliCoresAdded.begin(), caliCoresAdded.end(), mHandCoreRight->getUDCapSerial()) != caliCoresAdded.end()) {
+                                continue; // Already added
+                            }
+                            caliCoresAdded.push_back(mHandCoreRight->getUDCapSerial());
+                            caliCores.push_back(mHandCoreRight);
+                        }
+                    } else {
+                        if (mHandCoreLeft && mHandCoreLeft->getUDCapSerial() == serial && mLeftState == UD_INIT_STATE_LINKED) {
+                            if (std::find(caliCoresAdded.begin(), caliCoresAdded.end(), mHandCoreLeft->getUDCapSerial()) != caliCoresAdded.end()) {
+                                continue; // Already added
+                            }
+                            caliCoresAdded.push_back(mHandCoreLeft->getUDCapSerial());
+                            caliCores.push_back(mHandCoreLeft);
+                        }
+                        if (mHandCoreRight && mHandCoreRight->getUDCapSerial() == serial && mRightState == UD_INIT_STATE_LINKED) {
+                            if (std::find(caliCoresAdded.begin(), caliCoresAdded.end(), mHandCoreRight->getUDCapSerial()) != caliCoresAdded.end()) {
+                                continue; // Already added
+                            }
+                            caliCoresAdded.push_back(mHandCoreRight->getUDCapSerial());
+                            caliCores.push_back(mHandCoreRight);
+                        }
+                    }
+                }
+            }
+
+            if (!caliCores.empty()) {
+                runOnUIThread([this, caliCores, autoStart](){
+                    try {
+                        mCalibrationUI = std::make_unique<CalibrationUI>(caliCores);
+                        mCalibrationUI->set_transient_for(*this);
+                        mCalibrationUI->show();
+                        if (autoStart) {
+                            mCalibrationUI->startProcess();
+                        }
+                    } catch (const std::exception &e) {
+                        std::cerr << "Error in calibration UI: " << e.what() << std::endl;
+                    }
+                    return false;
+                });
+            }
+        }
+    });
+    OSCServer::getInstance().restart();
 }
 
 ConsumerUI::~ConsumerUI() {
-
+    OSCServer::getInstance().setCallback(nullptr);
 }
 
-void ConsumerUI::runOnUIThread(std::function<void()> callEvent) {
-    std::lock_guard lk(eventMutex);
-    eventQueue.push(callEvent);
-    eventCV.notify_all();
+void ConsumerUI::runOnUIThread(std::function<bool(void)> callEvent) {
+    Glib::MainContext::get_default()->invoke(callEvent);
 }
 
 void ConsumerUI::allReady() {
-    if (leftReady && rightReady) {
-        runOnUIThread([this]() {
+    runOnUIThread([this]() {
+        if (leftReady && rightReady) {
             mStatus.set_markup(_("<span font='18' weight='bold'>Ready</span>"));
             mDescription.set_text(_("UdCap running normally."));
-        });
-        setupVMCSender();
-        setupOSCSender();
-        setupUdcapQTSender();
-        setupVRSender();
-    }
+        } else {
+            mStatus.set_markup(_("<span font='18' weight='bold'>Found</span>"));
+            mDescription.set_text(_("Waiting for UdCap Gloves..."));
+            if (!leftReady) {
+                mLeftHand.set(create_placeholder_green_image());
+            }
+            if (!rightReady) {
+                mRightHand.set(create_placeholder_green_image());
+            }
+        };
+        return false;
+    });
+    setupVMCSender();
+    setupOSCSender();
+    setupUdcapQTSender();
+    setupVRSender();
 }
 
 void ConsumerUI::buildMenu() {
@@ -329,6 +435,14 @@ void ConsumerUI::buildMenu() {
         mDataTransferDialog->show();
     });
     add_action(actionDataTransfer);
+    auto actionPreference = Gio::SimpleAction::create("settings.preference");
+    actionPreference->signal_activate().connect([this](const Glib::VariantBase&) {
+        mPreferenceDialog = std::make_unique<PreferenceDialog>();
+        mPreferenceDialog->set_transient_for(*this);
+        mPreferenceDialog->set_modal(true);
+        mPreferenceDialog->show();
+    });
+    get_application()->add_action(actionPreference);
 }
 
 void ConsumerUI::setupVMCSender() {
@@ -339,7 +453,7 @@ void ConsumerUI::setupVMCSender() {
         if (enable) {
             if (mLeftState != UD_INIT_STATE_LINKED || mRightState != UD_INIT_STATE_LINKED) {
                 mVMC.set(create_placeholder_green_image());
-                return;
+                return false;
             }
             if (mVMCSender) {
                 mVMCSender.reset(nullptr);
@@ -355,6 +469,7 @@ void ConsumerUI::setupVMCSender() {
                 mVMC.set(create_placeholder_image());
             }
         }
+        return false;
     });
 }
 
@@ -366,7 +481,7 @@ void ConsumerUI::setupOSCSender() {
         if (enable) {
             if (mLeftState != UD_INIT_STATE_LINKED || mRightState != UD_INIT_STATE_LINKED) {
                 mOSC.set(create_placeholder_green_image());
-                return;
+                return false;
             }
             if (mOSCSender) {
                 mOSCSender.reset(nullptr);
@@ -382,6 +497,7 @@ void ConsumerUI::setupOSCSender() {
                 mOSC.set(create_placeholder_image());
             }
         }
+        return false;
     });
 }
 
@@ -393,7 +509,7 @@ void ConsumerUI::setupUdcapQTSender() {
         if (enable) {
             if (mLeftState != UD_INIT_STATE_LINKED || mRightState != UD_INIT_STATE_LINKED) {
                 mBroadcast.set(create_placeholder_green_image());
-                return;
+                return false;
             }
             if (mUdCapQTSender) {
                 mUdCapQTSender.reset(nullptr);
@@ -409,6 +525,7 @@ void ConsumerUI::setupUdcapQTSender() {
                 mBroadcast.set(create_placeholder_image());
             }
         }
+        return false;
     });
 }
 
@@ -430,16 +547,18 @@ void ConsumerUI::on_calibrate_button_clicked() {
 }
 
 void ConsumerUI::initConnectReceiver() {
-    std::lock_guard lk(uiMutex);
-    if (mLeftState == UD_INIT_STATE_LINKED && mRightState == UD_INIT_STATE_LINKED) {
-        mStatus.set_markup(_("<span font='18' weight='bold'>Wait for Calibration</span>"));
-        mDescription.set_text(_("UdCap Gloves are waiting for calibration."));
-        mCalibrate.set_sensitive(true);
-    } else {
-        mStatus.set_markup(_("<span font='18' weight='bold'>Waiting</span>"));
-        mDescription.set_text(_("Waiting for the other glove..."));
-        mCalibrate.set_sensitive(false);
-    }
+    runOnUIThread([this](){
+        if (mLeftState == UD_INIT_STATE_LINKED && mRightState == UD_INIT_STATE_LINKED) {
+            mStatus.set_markup(_("<span font='18' weight='bold'>Wait for Calibration</span>"));
+            mDescription.set_text(_("UdCap Gloves are waiting for calibration."));
+            mCalibrate.set_sensitive(true);
+        } else {
+            mStatus.set_markup(_("<span font='18' weight='bold'>Found</span>"));
+            mDescription.set_text(_("Waiting for UdCap Gloves..."));
+            mCalibrate.set_sensitive(false);
+        }
+        return false;
+    });
 }
 
 bool ConsumerUI::on_gl_render(const Glib::RefPtr<Gdk::GLContext>& context) {

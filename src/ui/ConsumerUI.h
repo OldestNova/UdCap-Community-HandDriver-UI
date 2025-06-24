@@ -25,6 +25,8 @@
 #include "dialogs/DataTransferDialog.h"
 #include "dialogs/FirmwareDialog.h"
 #include "components/QTSender.h"
+#include "dialogs/PreferenceDialog.h"
+#include "components/OSCServer.h"
 
 class ConsumerUI: public Gtk::ApplicationWindow, public threepp::PeripheralsEventSource {
 public:
@@ -35,7 +37,6 @@ public:
 private:
     void initConnectReceiver();
     void allReady();
-    std::mutex uiMutex;
     Gtk::Box mMainBox;
     Gtk::Paned mVPaned;
     Gtk::Box mTopBox;
@@ -72,13 +73,7 @@ private:
     std::unique_ptr<QTSender> mUdCapQTSender;
     void buildMenu();
 
-    std::thread eventThread;
-    std::condition_variable eventCV;
-    std::queue<std::function<void()>> eventQueue;
-    std::mutex eventMutex;
-    std::mutex eventWaitMutex;
-    bool eventRunning = true;
-    void runOnUIThread(std::function<void()>);
+    void runOnUIThread(std::function<bool(void)>);
     void setupVMCSender();
     void setupOSCSender();
     void setupUdcapQTSender();
@@ -92,6 +87,8 @@ protected:
     std::unique_ptr<CalibrationUI> mCalibrationUI;
     std::unique_ptr<DataTransferDialog> mDataTransferDialog;
     std::unique_ptr<FirmwareDialog> mFirmwareDialog;
+    std::unique_ptr<PreferenceDialog> mPreferenceDialog;
+
 };
 
 

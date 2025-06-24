@@ -64,13 +64,16 @@ FirmwareDialog::FirmwareDialog(std::vector<std::shared_ptr<UdCapV1Core>> _cores)
 
         if (core) {
             unlisten.push_back(core->listen([firmwareValue, channelEntry](std::shared_ptr<UdCapV1MCUPacket> packet){
-                if (packet->commandType == CommandType::CMD_FW_VERSION) {
-                    firmwareValue->set_text(packet->fwVersion);
-                } else if (packet->commandType == CommandType::CMD_GET_CHANNEL) {
-                    channelEntry->set_text(std::to_string(packet->channel));
-                } else if (packet->commandType == CommandType::CMD_SET_CHANNEL) {
-                    channelEntry->set_text(std::to_string(packet->channelResult));
-                }
+                Glib::MainContext::get_default()->invoke([firmwareValue, channelEntry, packet](){
+                    if (packet->commandType == CommandType::CMD_FW_VERSION) {
+                        firmwareValue->set_text(packet->fwVersion);
+                    } else if (packet->commandType == CommandType::CMD_GET_CHANNEL) {
+                        channelEntry->set_text(std::to_string(packet->channel));
+                    } else if (packet->commandType == CommandType::CMD_SET_CHANNEL) {
+                        channelEntry->set_text(std::to_string(packet->channelResult));
+                    }
+                    return false;
+                });
             }));
             core->mcuGetChannel();
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
