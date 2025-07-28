@@ -129,12 +129,11 @@ ConsumerUI::ConsumerUI(std::shared_ptr<Gtk::Application> app):
     mGLArea.signal_resize().connect(sigc::mem_fun(*this, &ConsumerUI::on_gl_resize));
 
     probeThread = std::thread([this]() {
-        UsbEnumerate usbEnum;
         std::vector<std::string> connected;
         while (true) {
              std::map<std::string, std::shared_ptr<PortAccessor>> receiver;
-             usbEnum.refresh(UsbEnumerateRefreshType::USB_ENUMERATE_REFRESH_SERIAL);
-             std::vector<SerialDevice> devices = usbEnum.findPorts([](const SerialDevice &device) {
+             UsbEnumerate::getInstance()->refresh(UsbEnumerateRefreshType::USB_ENUMERATE_REFRESH_SERIAL);
+             std::vector<SerialDevice> devices = UsbEnumerate::getInstance()->findPorts([](const SerialDevice &device) {
                  return device.vid == 0x1A86 && (device.pid == 0x7523 || device.pid == 0x0001);
              });
              for (const auto &device: devices) {
