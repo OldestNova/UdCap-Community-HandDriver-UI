@@ -3,6 +3,7 @@
 #include <openvr_driver.h>
 #include "../src/components/SteamVRBridgeProtocol.h"
 #include "HandReferencePose.h"
+#include "HandThumbClosedPose.h"
 #include <array>
 #include <algorithm>
 #include <cmath>
@@ -25,6 +26,43 @@ inline vr::HmdQuaternionf_t handNormalize(vr::HmdQuaternionf_t q) {
     if (!std::isfinite(n) || n < 0.000001f) return {1,0,0,0};
     const float s = 1.0f/std::sqrt(n);
     return {q.w*s,q.x*s,q.y*s,q.z*s};
+}
+
+inline float handUnitInput(float value) {
+    return std::isfinite(value) ? std::clamp(value, 0.0f, 1.0f) : 0.0f;
+}
+
+inline vr::HmdQuaternionf_t handSlerp(vr::HmdQuaternionf_t a,
+                                      vr::HmdQuaternionf_t b, float t) {
+    a = handNormalize(a);
+    b = handNormalize(b);
+    float dot = a.w*b.w + a.x*b.x + a.y*b.y + a.z*b.z;
+    if (dot < 0) {
+        b = {-b.w,-b.x,-b.y,-b.z};
+        dot = -dot;
+    }
+    if (dot > 0.9995f) {
+        return handNormalize({a.w+(b.w-a.w)*t, a.x+(b.x-a.x)*t,
+                              a.y+(b.y-a.y)*t, a.z+(b.z-a.z)*t});
+    }
+    const float angle = std::acos(std::clamp(dot, -1.0f, 1.0f));
+    const float inverseSine = 1.0f/std::sin(angle);
+    const float x = std::sin((1.0f-t)*angle)*inverseSine;
+    const float y = std::sin(t*angle)*inverseSine;
+    return handNormalize({x*a.w+y*b.w, x*a.x+y*b.x,
+                          x*a.y+y*b.y, x*a.z+y*b.z});
+}
+
+inline void mirrorHandReferenceBone(vr::VRBoneTransform_t &bone, int index) {
+    auto &p = bone.position;
+    const bool meta = index==2 || index==6 || index==11 || index==16 || index==21;
+    if (meta) {
+        p.v[0] = -p.v[0];
+        const auto q = bone.orientation;
+        bone.orientation = {-q.x,q.w,-q.z,q.y};
+    } else {
+        for (int axis=0;axis<3;++axis) p.v[axis] = -p.v[axis];
+    }
 }
 
 inline vr::VRBoneTransform_t handCompose(const vr::VRBoneTransform_t &parent,
@@ -66,24 +104,44 @@ inline std::array<vr::VRBoneTransform_t,31> makeBones(const SteamVRBridgePacket 
     std::array<vr::VRBoneTransform_t,31> bones{};
     std::copy(handReferenceRight.begin(),handReferenceRight.end(),bones.begin());
     if (hand == 0) {
-        for (int b=2;b<26;++b) {
-            auto &p = bones[b].position;
-            const bool meta = b==2 || b==6 || b==11 || b==16 || b==21;
-            if (meta) {
-                p.v[0] = -p.v[0];
-                const auto q = bones[b].orientation;
-                // Mirror the wrist's child frame, including its 90-degree
-                // FBX basis. Other local rotations stay identical across hands.
-                bones[b].orientation = {-q.x,q.w,-q.z,q.y};
-            } else {
-                for (int axis=0;axis<3;++axis) p.v[axis] = -p.v[axis];
-            }
-        }
+        // Mirror the wrist's child frame, including its 90-degree FBX basis.
+        for (int b=2;b<26;++b) mirrorHandReferenceBone(bones[b], b);
     }
     for (int b=0;b<26;++b) bones[b].orientation = handNormalize(bones[b].orientation);
     for (int source=0;source<15;++source) {
+        if (packet.hasNativeThumb && source < 3) continue;
         auto &q = bones[measuredHandBones[source]].orientation;
         q = handNormalize(handMultiply(q,steamVRJointDelta(packet.bones[source],hand,source)));
+    }
+    if (packet.hasNativeThumb) {
+        for (int source=0; source<3; ++source) {
+            const int boneIndex = measuredHandBones[source];
+            auto &bone = bones[boneIndex];
+            auto closed = handReferenceRight[boneIndex];
+            closed.orientation = handThumbClosedRight[source];
+            if (source == 0) {
+                for (int axis=0; axis<3; ++axis)
+                    closed.position.v[axis] = handThumbClosedRootRight[axis];
+            }
+            if (hand == 0) mirrorHandReferenceBone(closed, boneIndex);
+            const float curl = handUnitInput(packet.thumbFlexion[source]);
+            for (int axis=0; axis<3; ++axis)
+                bone.position.v[axis] +=
+                    (closed.position.v[axis]-bone.position.v[axis])*curl;
+            bone.orientation = handSlerp(bone.orientation, closed.orientation, curl);
+            if (source == 0) {
+                // Official splay is a3 * 0.375/30. The source physical yaw is
+                // 80 degrees per normalized unit; local -Z preserves the
+                // direction used by the prior SteamVR thumb adapter.
+                const float splay = std::isfinite(packet.thumbSplay)
+                    ? std::clamp(packet.thumbSplay, -1.0f, 1.0f) : 0.0f;
+                const float halfRadians = -splay * (80.0f*3.14159265358979323846f/360.0f);
+                bone.orientation = handMultiply(bone.orientation,
+                    {std::cos(halfRadians),0,0,std::sin(halfRadians)});
+            }
+            bone.orientation = handNormalize(handMultiply(bone.orientation,
+                steamVRJointDelta(packet.thumbOffsets[source], hand, source)));
+        }
     }
     // Auxiliary bones are root-local copies of the LAST KNUCKLES, not tips.
     // Receivers can use them for two-bone IK; zero/identity collapses that IK.

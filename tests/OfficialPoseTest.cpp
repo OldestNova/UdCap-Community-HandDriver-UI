@@ -4,6 +4,7 @@
 #include "components/QingTongPose.h"
 #include "components/VRChatPackets.h"
 #include "components/SteamVRTrackingPresets.h"
+#include "components/SteamVRThumbInput.h"
 #include <oscpp/server.hpp>
 
 #include <array>
@@ -61,6 +62,32 @@ int main() {
     const std::array<float, 3> thumbFix{0.3f, 0.3f, 1.2f};
     HandRotation offset{};
     std::array<double, 28> angles{};
+    {
+        // Official SteamVR InputData uses thumb flexion and splay scalars,
+        // independently of the VMC thumbFix quaternion gains.
+        SteamVRBridgePacket input;
+        angles[2] = -60;
+        angles[1] = -50;
+        angles[0] = -50;
+        angles[3] = -20;
+        offset.thumbFinger.proximal.y = 12;
+        setSteamVRThumbInput(input, angles, offset);
+        if (!check(input.hasNativeThumb &&
+                   nearlyEqual(input.thumbFlexion[0], 1) &&
+                   nearlyEqual(input.thumbFlexion[1], 1) &&
+                   nearlyEqual(input.thumbFlexion[2], 1) &&
+                   nearlyEqual(input.thumbSplay, -0.25) &&
+                   nearlyEqual(input.thumbOffsets[0].y, std::sin(6.0 * 3.14159265358979323846 / 180.0)),
+                   "SteamVR thumb channels differ from official input")) return 1;
+        angles = {};
+        offset = {};
+        setSteamVRThumbInput(input, angles, offset);
+        if (!check(nearlyEqual(input.thumbFlexion[0], 0) &&
+                   nearlyEqual(input.thumbFlexion[1], 15.0/65.0) &&
+                   nearlyEqual(input.thumbFlexion[2], 15.0/65.0) &&
+                   nearlyEqual(input.thumbSplay, 0),
+                   "SteamVR open thumb does not match official baseline")) return 1;
+    }
     angles[6] = 30; // Index proximal curl
     auto left = UdCapV1Core::officialHandPose(angles, UD_TARGET_LEFT_HAND, offset, thumbFix);
     auto right = UdCapV1Core::officialHandPose(angles, UD_TARGET_RIGHT_HAND, offset, thumbFix);

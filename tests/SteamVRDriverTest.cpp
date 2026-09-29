@@ -214,9 +214,53 @@ void skeletonGeometry() {
         require(nearlyEqual(l.v[0],-r.v[0])&&nearlyEqual(l.v[1],r.v[1])&&nearlyEqual(l.v[2],r.v[2]),"left/right hand geometry not mirrored");
     }
 }
+void nativeThumbGeometry() {
+    std::array<VRBoneTransform_t, 2> closedRoots{};
+    for (int hand=0; hand<2; ++hand) {
+        SteamVRBridgePacket p;
+        p.hasNativeThumb=1;
+        p.thumbFlexion[1]=15.0f/65.0f;
+        p.thumbFlexion[2]=15.0f/65.0f;
+        const auto open=handModelSpace(makeBones(p,hand));
+        const auto openRoot=makeBones(p,hand)[2].orientation;
+        p.thumbFlexion[0]=1;
+        const auto closedLocal=makeBones(p,hand);
+        const auto closed=handModelSpace(closedLocal);
+        closedRoots[hand]=closedLocal[2];
+        const auto closedRoot=closedLocal[2].orientation;
+        const float dot=std::abs(openRoot.w*closedRoot.w+openRoot.x*closedRoot.x+
+                                 openRoot.y*closedRoot.y+openRoot.z*closedRoot.z);
+        require(2*std::acos(std::clamp(dot,0.0f,1.0f))>.60f,
+                "native thumb root did not traverse official open-to-closed pose");
+        require(distance(open[5].position,closed[5].position)>.025f,
+                "native thumb root barely moves the fingertip");
+        p.thumbFlexion[1]=1;p.thumbFlexion[2]=1;
+        const auto full=handModelSpace(makeBones(p,hand));
+        require(distance(closed[5].position,full[5].position)>.02f,
+                "native thumb middle/distal flexion was lost");
+        p.thumbFlexion[0]=0;
+        p.thumbSplay=-.25f;
+        const auto negative=handModelSpace(makeBones(p,hand));
+        p.thumbSplay=.1875f;
+        const auto positive=handModelSpace(makeBones(p,hand));
+        require(distance(negative[5].position,positive[5].position)>.02f,
+                "native thumb side-to-side splay was lost");
+        const auto plain=makeBones(p,hand)[2].orientation;
+        p.thumbOffsets[0]={0,.173648f,0,.98480775f};
+        const auto offset=makeBones(p,hand)[2].orientation;
+        const float offsetDot=std::abs(offset.w*plain.w+offset.x*plain.x+
+                                       offset.y*plain.y+offset.z*plain.z);
+        require(offsetDot<.999f,"native thumb lost user bone offset");
+    }
+    require(nearlyEqual(closedRoots[0].position.v[0],-closedRoots[1].position.v[0]) &&
+            nearlyEqual(closedRoots[0].position.v[1],closedRoots[1].position.v[1]) &&
+            nearlyEqual(closedRoots[0].position.v[2],closedRoots[1].position.v[2]),
+            "native thumb root position is not mirrored");
+}
 int main(int argc,char **argv) try {
     require(argc==2,"expected driver bundle directory");
     skeletonGeometry();
+    nativeThumbGeometry();
     Context ctx; VRDriverContext()=&ctx;
     for(int hand=0;hand<2;++hand) {
         Controller device(hand); const auto before=ctx.input.updates.size();

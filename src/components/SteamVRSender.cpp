@@ -1,4 +1,5 @@
 #include "SteamVRSender.h"
+#include "SteamVRThumbInput.h"
 #include "UserConfig.h"
 #include "GloveConfig.h"
 #include <algorithm>
@@ -130,10 +131,17 @@ void SteamVRSender::add(const std::shared_ptr<UdCapV1Core> &core) {
         switch (data->commandType) {
             case CMD_LINK_STATE:
                 packet.connected = data->udState == UD_INIT_STATE_LINKED;
+                if (!packet.connected) packet.hasNativeThumb = 0;
                 break;
             case CMD_READY:
                 packet.connected = data->isReady;
+                if (!packet.connected) packet.hasNativeThumb = 0;
                 break;
+            case CMD_ANGLE:
+                // Core emits CMD_ANGLE immediately before the matching
+                // skeleton. Send both together on the skeleton event.
+                setSteamVRThumbInput(packet, data->result, data->angleBoneOffset);
+                return;
             case CMD_SKELETON_QUATERNION:
                 copySkeleton(packet, data->skeletonQuaternion);
                 break;

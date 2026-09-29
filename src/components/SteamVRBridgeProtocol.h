@@ -7,7 +7,7 @@
 // Localhost datagram shared by the UI process and the SteamVR driver process.
 // Both processes are built for the same host architecture.
 constexpr std::uint32_t steamVrBridgeMagic = 0x55444350; // UDCP
-constexpr std::uint16_t steamVrBridgeVersion = 2;
+constexpr std::uint16_t steamVrBridgeVersion = 3;
 constexpr std::uint16_t steamVrBridgePort = 8998;
 constexpr std::uint16_t steamVrTrackerSerialBytes = 128;
 
@@ -24,6 +24,12 @@ struct SteamVRBridgePacket {
     std::uint8_t hand = 0; // 0=left, 1=right
     std::uint8_t connected = 0;
     SteamVRBridgeQuaternion bones[15]{};
+    // The official SteamVR path uses independent normalized curl and splay
+    // inputs. Bone quaternions remain available for the other four fingers.
+    float thumbFlexion[3]{};
+    float thumbSplay = 0;
+    SteamVRBridgeQuaternion thumbOffsets[3]{}; // Core-local bone offsets.
+    std::uint8_t hasNativeThumb = 0;
     float joystickX = 0;
     float joystickY = 0;
     float trigger = 0;
@@ -44,6 +50,6 @@ struct SteamVRBridgePacket {
 
 static_assert(std::is_trivially_copyable_v<SteamVRBridgePacket>);
 static_assert(std::is_standard_layout_v<SteamVRBridgePacket>);
-static_assert(sizeof(SteamVRBridgePacket) == 428, "SteamVR bridge packet ABI changed");
+static_assert(sizeof(SteamVRBridgePacket) == 496, "SteamVR bridge packet ABI changed");
 
 #endif
