@@ -49,13 +49,18 @@ struct Input final : IVRDriverInput {
     std::map<VRInputComponentHandle_t,std::string> poseNames;
     std::map<std::pair<PropertyContainerHandle_t,std::string>,VRInputComponentHandle_t> poseHandles;
     std::map<VRInputComponentHandle_t,HmdMatrix34_t> poseUpdates;
+    std::map<std::pair<PropertyContainerHandle_t,std::string>,VRInputComponentHandle_t> hapticHandles;
     EVRInputError createError=VRInputError_None, updateError=VRInputError_None;
     EVRInputError poseCreateError=VRInputError_None, poseUpdateError=VRInputError_None;
+    EVRInputError hapticCreateError=VRInputError_None;
     EVRInputError CreateBooleanComponent(PropertyContainerHandle_t,const char *,VRInputComponentHandle_t *h) override { *h=next++;return VRInputError_None; }
     EVRInputError UpdateBooleanComponent(VRInputComponentHandle_t,bool,double) override {return VRInputError_None;}
     EVRInputError CreateScalarComponent(PropertyContainerHandle_t,const char *,VRInputComponentHandle_t *h,EVRScalarType,EVRScalarUnits) override { *h=next++;return VRInputError_None; }
     EVRInputError UpdateScalarComponent(VRInputComponentHandle_t,float,double) override {return VRInputError_None;}
-    EVRInputError CreateHapticComponent(PropertyContainerHandle_t,const char *,VRInputComponentHandle_t *) override {return VRInputError_None;}
+    EVRInputError CreateHapticComponent(PropertyContainerHandle_t container,const char *name,VRInputComponentHandle_t *h) override {
+        if(hapticCreateError!=VRInputError_None) return hapticCreateError;
+        *h=next++;hapticHandles[{container,name}]=*h;return VRInputError_None;
+    }
     EVRInputError CreateSkeletonComponent(PropertyContainerHandle_t,const char *name,const char *path,const char *base,
         EVRSkeletalTrackingLevel level,const VRBoneTransform_t *,uint32_t,VRInputComponentHandle_t *h) override {
         if(createError!=VRInputError_None) return createError;
@@ -133,6 +138,13 @@ void resources(const fs::path &root, const Context &ctx) {
     const auto binding=read(base/"input/warudo_bindings.json");
     require(profile["controller_type"]==binding["controller_type"],"binding identity mismatch");
     require(read(base/"input/udcap_remapping.json")["to_controller_type"]==profile["controller_type"],"remapping identity mismatch");
+    require(profile["input_source"]["/output/haptic"]["type"]=="vibration","haptic output missing from input profile");
+    const auto remapping=read(base/"input/udcap_remapping.json");
+    bool hapticMapped=false;
+    for(const auto &entry:remapping["layouts"][0]["autoremappings"])
+        hapticMapped |= entry.value("from",std::string{})=="/user/hand/right/output/haptic" &&
+                        entry.value("to",std::string{})=="/user/hand/right/output/haptic";
+    require(hapticMapped,"Knuckles haptic output is not remapped");
     for(const auto &entry:profile["default_bindings"]) require(fs::is_regular_file(base/"input"/entry["binding_url"].get<std::string>()),"default binding not bundled");
     require(profile["default_bindings"][0]["app_key"]=="steam.overlay.2079120","missing Warudo overlay binding");
     const auto &skeletons=binding["bindings"]["/actions/default"]["skeleton"];
@@ -269,10 +281,32 @@ int main(int argc,char **argv) try {
         require(ctx.input.updates[before].range==VRSkeletalMotionRange_WithController &&
             ctx.input.updates[before+1].range==VRSkeletalMotionRange_WithoutController,"missing skeletal range");
         require(ctx.input.updates.back().path==(hand==0?"/skeleton/hand/left":"/skeleton/hand/right"),"wrong skeletal side");
+        const auto hapticHandle=ctx.input.hapticHandles.at({static_cast<PropertyContainerHandle_t>(hand+100),"/output/haptic"});
+        VREvent_t hapticEvent{};
+        hapticEvent.eventType=VREvent_Input_HapticVibration;
+        hapticEvent.data.hapticVibration.containerHandle=hand+100;
+        hapticEvent.data.hapticVibration.componentHandle=hapticHandle;
+        hapticEvent.data.hapticVibration.fDurationSeconds=.2f;
+        hapticEvent.data.hapticVibration.fFrequency=150;
+        hapticEvent.data.hapticVibration.fAmplitude=.75f;
+        SteamVRHapticPacket hapticPacket{};
+        require(!device.hapticPacket(hapticEvent,hapticPacket),"disconnected glove accepted haptic output");
         device.RunFrame();require(!ctx.host.pose.deviceIsConnected,"initialization must not fake a connected glove");
         require(ctx.input.updates.size()==before+4,"idle device lost skeletal stream");
         SteamVRBridgePacket p; p.connected=1;p.hand=hand;p.bones[3]={0,0,.6f,.8f};device.SetPacket(p);device.RunFrame();
         require(ctx.host.pose.deviceIsConnected,"fresh glove not connected");
+        require(device.hapticPacket(hapticEvent,hapticPacket) && hapticPacket.hand==hand &&
+                nearlyEqual(hapticPacket.durationSeconds,.2f) && nearlyEqual(hapticPacket.amplitude,.75f),
+                "SteamVR haptic event was not routed to the correct glove");
+        hapticEvent.data.hapticVibration.componentHandle=hapticHandle+1;
+        require(!device.hapticPacket(hapticEvent,hapticPacket),"foreign haptic handle accepted");
+        hapticEvent.data.hapticVibration.componentHandle=hapticHandle;
+        hapticEvent.data.hapticVibration.fAmplitude=0;
+        require(!device.hapticPacket(hapticEvent,hapticPacket),"zero-amplitude haptic event accepted");
+        hapticEvent.data.hapticVibration.fAmplitude=.75f;
+        hapticEvent.data.hapticVibration.fFrequency=0;
+        require(!device.hapticPacket(hapticEvent,hapticPacket),"zero-frequency haptic event accepted");
+        hapticEvent.data.hapticVibration.fFrequency=150;
         require(!ctx.host.pose.poseIsValid,"must not fake a Tracker pose");
         require(std::abs(ctx.input.updates.back().bones[7].orientation.z)>.4f,"measured finger bend not updated");
         const auto expected=handModelSpace(ctx.input.updates.back().bones);
@@ -284,6 +318,7 @@ int main(int argc,char **argv) try {
                 require(nearlyEqual(actual.m[row][col],expectedMatrix.m[row][col]),"rendered joint differs from skeletal input");
         }
         p.connected=0;device.SetPacket(p);device.RunFrame();require(!ctx.host.pose.deviceIsConnected,"disconnect not reported");
+        require(!device.hapticPacket(hapticEvent,hapticPacket),"disconnected glove accepted haptics");
         const auto size=ctx.input.updates.size();device.Deactivate();device.RunFrame();
         require(ctx.input.updates.size()==size,"deactivated handle still used");
     }
@@ -299,6 +334,9 @@ int main(int argc,char **argv) try {
     VRProperties()->SetInt32Property(tracker,Prop_ControllerRoleHint_Int32,TrackedControllerRole_LeftHand);
     require(!trackerIsHand(7,0,""),"body Tracker incorrectly selected as a hand");
     Controller failing(0);ctx.input.createError=VRInputError_InvalidParam;
+    ctx.input.hapticCreateError=VRInputError_InvalidParam;
+    require(failing.Activate(3)==VRInitError_Driver_Failed,"haptic creation failure silently accepted");
+    ctx.input.hapticCreateError=VRInputError_None;
     require(failing.Activate(3)==VRInitError_Driver_Failed,"creation failure silently accepted");
     ctx.input.createError=VRInputError_None;ctx.input.updateError=VRInputError_InvalidBoneCount;
     require(failing.Activate(3)==VRInitError_Driver_Failed,"initial pose failure silently accepted");

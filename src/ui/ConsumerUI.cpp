@@ -657,6 +657,10 @@ ConsumerUI::ConsumerUI(std::shared_ptr<Gtk::Application> app, bool advanced):
     OSCServer::getInstance().restart();
     lastTelemetrySample = std::chrono::steady_clock::now();
     mTelemetryTimer = Glib::signal_timeout().connect(sigc::mem_fun(*this, &ConsumerUI::sampleFrameRates), 1000);
+    mSteamVRHapticTimer = Glib::signal_timeout().connect([this]() {
+        if (mSteamVRSender) mSteamVRSender->pollHaptics();
+        return true;
+    }, 20);
 }
 
 void ConsumerUI::installIndicatorTooltip(Gtk::Widget &widget, Indicator indicator) {
@@ -2017,6 +2021,7 @@ ConsumerUI::~ConsumerUI() {
     *alive = false;
     if (advancedMode) mAdvancedAddDialog.hide();
     mTelemetryTimer.disconnect();
+    mSteamVRHapticTimer.disconnect();
 #ifndef NO_3DPREVIEW
     releasePreview();
 #endif

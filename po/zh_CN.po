@@ -163,6 +163,15 @@ msgstr "控制器"
 msgid "Controller Settings"
 msgstr "控制器设置"
 
+msgid "Test vibration motor 1"
+msgstr "测试震动马达 1"
+
+msgid "Test vibration motor 2"
+msgstr "测试震动马达 2"
+
+msgid "Vibration command sent"
+msgstr "已发送震动命令"
+
 #: src\dialogs\HandSettingsDialog.cpp:73
 #: src\dialogs\ControllerSettingsDialog.cpp:56
 #: src\dialogs\ControllerSettingsDialog.cpp:90

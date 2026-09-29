@@ -13,7 +13,8 @@ ControllerSettingsDialog::ControllerSettingsDialog(const std::vector<std::shared
         if (!core) continue;
         hasCore = true;
         auto frame = Gtk::make_managed<Gtk::Frame>(
-            std::string(handIndex == 0 ? _("Left glove") : _("Right glove")) + ": " + core->getUDCapSerial());
+            std::string(core->getTarget() == UD_TARGET_LEFT_HAND ? _("Left glove") : _("Right glove")) +
+            ": " + core->getUDCapSerial());
         frame->set_hexpand(true);
         auto box = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL, 8);
         box->set_margin(10);
@@ -110,6 +111,21 @@ ControllerSettingsDialog::ControllerSettingsDialog(const std::vector<std::shared
         box->append(*capture);
         box->append(*finish);
         box->append(*reset);
+        auto vibration = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL, 8);
+        for (int motor = 1; motor <= 2; ++motor) {
+            auto button = Gtk::make_managed<Gtk::Button>(motor == 1
+                ? _("Test vibration motor 1") : _("Test vibration motor 2"));
+            button->signal_clicked().connect([core, status, motor]() {
+                try {
+                    core->mcuSendVibration(motor, 0.2f, 10);
+                    status->set_text(_("Vibration command sent"));
+                } catch (const std::exception &e) {
+                    status->set_text(e.what());
+                }
+            });
+            vibration->append(*button);
+        }
+        box->append(*vibration);
         box->append(*status);
         frame->set_child(*box);
         content.append(*frame);

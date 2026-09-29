@@ -191,6 +191,12 @@ public:
         input->CreateScalarComponent(container, "/input/grip/value", &grip_,
                                      vr::VRScalarType_Absolute, vr::VRScalarUnits_NormalizedOneSided);
         input->CreateBooleanComponent(container, "/input/trackpad/click", &trackpadClick_);
+        const auto hapticError = input->CreateHapticComponent(container, "/output/haptic", &haptic_);
+        if (hapticError != vr::VRInputError_None) {
+            logSkeletonError("CreateHapticComponent", hapticError);
+            Deactivate();
+            return vr::VRInitError_Driver_Failed;
+        }
         const char *side = hand_ == 0 ? "left" : "right";
         const std::string component = std::string("/input/skeleton/") + side;
         const std::string path = std::string("/skeleton/hand/") + side;
@@ -224,6 +230,7 @@ public:
     void Deactivate() override {
         index_ = vr::k_unTrackedDeviceIndexInvalid;
         skeleton_ = vr::k_ulInvalidInputComponentHandle;
+        haptic_ = vr::k_ulInvalidInputComponentHandle;
         renderPoses_.fill(vr::k_ulInvalidInputComponentHandle);
         lastSkeletonError_ = vr::VRInputError_None;
     }
@@ -283,6 +290,25 @@ public:
         lastPacket_ = Clock::now();
     }
 
+    bool hapticPacket(const vr::VREvent_t &event, SteamVRHapticPacket &out) const {
+        if (index_ == vr::k_unTrackedDeviceIndexInvalid ||
+            haptic_ == vr::k_ulInvalidInputComponentHandle ||
+            event.eventType != vr::VREvent_Input_HapticVibration ||
+            event.data.hapticVibration.componentHandle != haptic_ ||
+            event.data.hapticVibration.containerHandle !=
+                vr::VRProperties()->TrackedDeviceToPropertyContainer(index_) ||
+            !packet_.connected || lastPacket_ == Clock::time_point{} ||
+            Clock::now() - lastPacket_ >= std::chrono::seconds(1)) return false;
+        const auto &haptic = event.data.hapticVibration;
+        if (!std::isfinite(haptic.fFrequency) || haptic.fFrequency <= 0 ||
+            !std::isfinite(haptic.fAmplitude) || haptic.fAmplitude <= 0 ||
+            !std::isfinite(haptic.fDurationSeconds) || haptic.fDurationSeconds < 0) return false;
+        out.hand = static_cast<std::uint8_t>(hand_);
+        out.durationSeconds = bounded(haptic.fDurationSeconds, 0.04f, 2.5f);
+        out.amplitude = bounded(haptic.fAmplitude, 0.0f, 1.0f);
+        return true;
+    }
+
     void RunFrame() {
         if (index_ == vr::k_unTrackedDeviceIndexInvalid) return;
         const auto pose = GetPose();
@@ -339,6 +365,7 @@ private:
     vr::VRInputComponentHandle_t triggerClick_{}, trigger_{}, gripClick_{}, grip_{};
     vr::VRInputComponentHandle_t trackpadClick_{};
     vr::VRInputComponentHandle_t skeleton_ = vr::k_ulInvalidInputComponentHandle;
+    vr::VRInputComponentHandle_t haptic_ = vr::k_ulInvalidInputComponentHandle;
     std::array<vr::VRInputComponentHandle_t, 16> renderPoses_{};
     vr::EVRInputError lastSkeletonError_ = vr::VRInputError_None;
 };
@@ -413,7 +440,18 @@ public:
             }
         }
         vr::VREvent_t event{};
-        while (vr::VRServerDriverHost()->PollNextEvent(&event, sizeof(event))) {}
+        while (vr::VRServerDriverHost()->PollNextEvent(&event, sizeof(event))) {
+            SteamVRHapticPacket haptic{};
+            if ((left_ && left_->hapticPacket(event, haptic)) ||
+                (right_ && right_->hapticPacket(event, haptic))) {
+                sockaddr_in destination{};
+                destination.sin_family = AF_INET;
+                destination.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+                destination.sin_port = htons(steamVrHapticPort);
+                ::sendto(socket_, reinterpret_cast<const char *>(&haptic), sizeof(haptic), 0,
+                         reinterpret_cast<const sockaddr *>(&destination), sizeof(destination));
+            }
+        }
         if (left_) left_->RunFrame();
         if (right_) right_->RunFrame();
     }

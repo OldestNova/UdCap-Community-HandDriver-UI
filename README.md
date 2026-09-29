@@ -28,7 +28,7 @@
 ## 介绍
 社区实现的宇叠动作捕捉手套驱动的用户界面，一致化消费者版驱动和企业版驱动。理论上以原生方式支持 Windows macOS Linux 平台。以 C++ 20 实现，尽可能静态链接。
 
-提供 VMC、VRChat OSC、SteamVR、UdCap 广播 协议的支持。使用 GTK4 和 GTKmm 编写用户界面。
+提供 VMC、VRChat OSC、SteamVR、UdCap 广播 协议的支持。使用 GTK4 和 GTKmm 编写用户界面。控制器设置中可分别测试每只手套的两个震动马达；SteamVR 的触觉输出会发送到对应手套的两个马达，时长与强度受手套硬件协议范围限制。
 
 ## 依赖和编译
 ### 依赖

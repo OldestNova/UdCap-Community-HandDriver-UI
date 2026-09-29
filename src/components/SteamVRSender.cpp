@@ -3,6 +3,7 @@
 #include "UserConfig.h"
 #include "GloveConfig.h"
 #include <algorithm>
+#include <cmath>
 #include <cstring>
 #include <stdexcept>
 
@@ -23,8 +24,11 @@ void copySkeleton(SteamVRBridgePacket &out, const HandQuaternion &in) {
 }
 
 SteamVRSender::SteamVRSender()
-    : socket(io), endpoint(boost::asio::ip::make_address("127.0.0.1"), steamVrBridgePort) {
+    : socket(io), hapticSocket(io), endpoint(boost::asio::ip::make_address("127.0.0.1"), steamVrBridgePort) {
     socket.open(boost::asio::ip::udp::v4());
+    hapticSocket.open(boost::asio::ip::udp::v4());
+    hapticSocket.bind({boost::asio::ip::make_address("127.0.0.1"), steamVrHapticPort});
+    hapticSocket.non_blocking(true);
     state[0].hand = 0;
     state[1].hand = 1;
     reloadTrackingOffsets();
@@ -40,9 +44,40 @@ SteamVRSender::~SteamVRSender() {
     }
     boost::system::error_code error;
     socket.close(error);
+    hapticSocket.close(error);
 #if defined(UDCAP_HAVE_OPENVR_CLIENT)
     if (vrSystem) vr::VR_Shutdown();
 #endif
+}
+
+void SteamVRSender::pollHaptics() {
+    // The UI timer calls this on the UI thread, where sender creation and
+    // destruction also happen. Bound the work per tick so input stays responsive.
+    for (int i = 0; i < 8; ++i) {
+        std::array<char, sizeof(SteamVRHapticPacket) + 1> bytes{};
+        boost::asio::ip::udp::endpoint source;
+        boost::system::error_code error;
+        const auto count = hapticSocket.receive_from(boost::asio::buffer(bytes), source, 0, error);
+        if (error == boost::asio::error::would_block || error == boost::asio::error::try_again) break;
+        if (error) break;
+        if (count != sizeof(SteamVRHapticPacket) || !source.address().is_loopback()) continue;
+        SteamVRHapticPacket packet{};
+        std::memcpy(&packet, bytes.data(), sizeof(packet));
+        if (packet.magic != steamVrBridgeMagic || packet.version != steamVrBridgeVersion ||
+            packet.hand > 1 || !std::isfinite(packet.durationSeconds) ||
+            !std::isfinite(packet.amplitude) || packet.durationSeconds < 0 ||
+            packet.amplitude <= 0) continue;
+        if (auto core = hapticCores[packet.hand].lock()) {
+            const auto duration = std::clamp(packet.durationSeconds, 0.04f, 2.5f);
+            const auto strength = 4 + static_cast<int>(std::lround(std::clamp(packet.amplitude, 0.0f, 1.0f) * 6));
+            try {
+                core->mcuSendVibration(1, duration, strength);
+                core->mcuSendVibration(2, duration, strength);
+            } catch (const std::exception &) {
+                // A receiver can disappear between the link-state event and a haptic event.
+            }
+        }
+    }
 }
 
 #if defined(UDCAP_HAVE_OPENVR_CLIENT)
@@ -119,6 +154,7 @@ void SteamVRSender::add(const std::shared_ptr<UdCapV1Core> &core) {
         throw std::invalid_argument("Unknown glove hand");
     const std::size_t index = target == UD_TARGET_LEFT_HAND ? 0 : 1;
     if (unlisten[index]) throw std::runtime_error("SteamVR hand already attached");
+    hapticCores[index] = core;
     gloveSerials[index] = core->getUDCapSerial();
     reloadTrackingOffsets();
     state[index].connected = 1;

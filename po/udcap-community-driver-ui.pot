@@ -164,6 +164,15 @@ msgstr ""
 msgid "Controller Settings"
 msgstr ""
 
+msgid "Test vibration motor 1"
+msgstr ""
+
+msgid "Test vibration motor 2"
+msgstr ""
+
+msgid "Vibration command sent"
+msgstr ""
+
 #: src\dialogs\HandSettingsDialog.cpp:73
 #: src\dialogs\ControllerSettingsDialog.cpp:56
 #: src\dialogs\ControllerSettingsDialog.cpp:90

@@ -268,6 +268,7 @@ private:
     std::map<std::string, std::pair<uint32_t, const UdCapV1Core *>> activeQtBindings;
     std::string activeQtDestination;
     std::unique_ptr<SteamVRSender> mSteamVRSender;
+    sigc::connection mSteamVRHapticTimer;
     std::unique_ptr<OptiTrackSender> mOptiTrackSender;
     bool optiTrackSenderErrorShown = false;
     void syncOptiTrackSender();

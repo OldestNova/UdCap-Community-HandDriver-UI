@@ -14,10 +14,8 @@
         { "from": "/user/hand/right/input/thumbstick", "to": "/user/hand/right/input/joystick" },
         { "from": "/user/hand/right/input/trigger", "to": "/user/hand/right/input/trigger" },
         { "from": "/user/hand/right/input/grip", "to": "/user/hand/right/input/grip" },
-        { "from": "/user/hand/right/input/trackpad", "to": "/user/hand/right/input/trackpad" }
-      ],
-      "remappings": [
-        { "from": { "path": "/user/hand/right/output/haptic" }, "remapping_mode": "delete" }
+        { "from": "/user/hand/right/input/trackpad", "to": "/user/hand/right/input/trackpad" },
+        { "from": "/user/hand/right/output/haptic", "to": "/user/hand/right/output/haptic" }
       ]
     }
   ]

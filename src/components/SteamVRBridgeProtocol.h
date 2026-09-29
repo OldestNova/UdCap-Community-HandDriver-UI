@@ -9,6 +9,7 @@
 constexpr std::uint32_t steamVrBridgeMagic = 0x55444350; // UDCP
 constexpr std::uint16_t steamVrBridgeVersion = 3;
 constexpr std::uint16_t steamVrBridgePort = 8998;
+constexpr std::uint16_t steamVrHapticPort = 8999;
 constexpr std::uint16_t steamVrTrackerSerialBytes = 128;
 
 struct SteamVRBridgeQuaternion {
@@ -51,5 +52,18 @@ struct SteamVRBridgePacket {
 static_assert(std::is_trivially_copyable_v<SteamVRBridgePacket>);
 static_assert(std::is_standard_layout_v<SteamVRBridgePacket>);
 static_assert(sizeof(SteamVRBridgePacket) == 496, "SteamVR bridge packet ABI changed");
+
+// Reverse channel: one SteamVR haptic output per hand, delivered to the UI
+// which owns the serial connection to the two motors in that glove.
+struct SteamVRHapticPacket {
+    std::uint32_t magic = steamVrBridgeMagic;
+    std::uint16_t version = steamVrBridgeVersion;
+    std::uint8_t hand = 0;
+    std::uint8_t reserved = 0;
+    float durationSeconds = 0;
+    float amplitude = 0;
+};
+static_assert(std::is_trivially_copyable_v<SteamVRHapticPacket>);
+static_assert(sizeof(SteamVRHapticPacket) == 16, "SteamVR haptic packet ABI changed");
 
 #endif

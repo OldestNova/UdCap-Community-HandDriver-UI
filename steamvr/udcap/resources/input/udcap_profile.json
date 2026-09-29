@@ -17,6 +17,7 @@
     "/input/trigger": { "type": "trigger", "value": true, "click": true, "binding_image_point": [30, 110], "order": 5 },
     "/input/grip": { "type": "trigger", "value": true, "click": true, "binding_image_point": [95, 110], "order": 6 },
     "/input/trackpad": { "type": "button", "binding_image_point": [65, 115], "order": 7 },
+    "/output/haptic": { "type": "vibration", "binding_image_point": [65, 130], "order": 8 },
     "/input/skeleton/left": { "type": "skeleton", "side": "left", "skeleton": "/skeleton/hand/left", "binding_image_point": [20, 20] },
     "/input/skeleton/right": { "type": "skeleton", "side": "right", "skeleton": "/skeleton/hand/right", "binding_image_point": [20, 20] },
     "/pose/udcapc_bone_1": { "type": "pose", "visibility": "AvailableButHidden" },
