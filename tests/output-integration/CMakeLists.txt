@@ -1,0 +1,45 @@
+cmake_minimum_required(VERSION 3.29)
+project(UdCapOutputIntegration LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+get_filename_component(UI_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE)
+set(UDCAP_CORE_SOURCE_DIR "${UI_ROOT}/../UdCap-Community-HandDriver-Core" CACHE PATH "Core source")
+set(UI_DEPS "${UI_ROOT}/build/_deps" CACHE PATH "Existing CPM dependency sources")
+set(CPM_CMAKE_PATH "${UI_ROOT}/build-compile-repro/cmake/CPM.cmake" CACHE FILEPATH "CPM module")
+set(CPM_Eigen_SOURCE "${UI_DEPS}/eigen-src" CACHE PATH "Eigen source")
+set(CPM_nlohmann_json_SOURCE "${UI_DEPS}/nlohmann_json-src" CACHE PATH "JSON source")
+set(USE_MANUAL_SERIAL_DRIVER ON CACHE BOOL "Inject test input without device discovery" FORCE)
+set(BUILD_TEST_TOOLS OFF CACHE BOOL "Core test tools" FORCE)
+add_subdirectory("${UDCAP_CORE_SOURCE_DIR}" core)
+find_package(nng CONFIG REQUIRED)
+find_path(RAPIDJSON_INCLUDE rapidjson/document.h REQUIRED)
+file(GLOB BOOST_INCLUDES "${UI_DEPS}/boost-src/libs/*/include" "${UI_DEPS}/boost-src/libs/numeric/*/include")
+add_executable(UdCapOutputIntegration ../OutputIntegrationTest.cpp
+    "${UI_ROOT}/src/components/VMCSender.cpp"
+    "${UI_ROOT}/src/components/OSCSender.cpp"
+    "${UI_ROOT}/src/components/QTSender.cpp"
+    "${UI_ROOT}/src/components/OptiTrackSender.cpp")
+target_include_directories(UdCapOutputIntegration PRIVATE "${UI_ROOT}/src"
+    "${UI_DEPS}/oscpp-src/include" "${RAPIDJSON_INCLUDE}" ${BOOST_INCLUDES})
+target_compile_definitions(UdCapOutputIntegration PRIVATE BOOST_ALL_NO_LIB _WIN32_WINNT=0x0601)
+target_link_libraries(UdCapOutputIntegration PRIVATE UdCapCommunityDriverCore nng::nng)
+if(WIN32)
+    add_custom_command(TARGET UdCapOutputIntegration POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:nng::nng>"
+            "$<TARGET_FILE_DIR:UdCapOutputIntegration>" VERBATIM)
+endif()
+if(MSVC)
+    target_compile_options(UdCapOutputIntegration PRIVATE /utf-8)
+endif()
+enable_testing()
+if(WIN32)
+    add_executable(UdCapSteamVRInstallationTest ../SteamVRInstallationTest.cpp
+        "${UI_ROOT}/src/components/SteamVRInstallation.cpp")
+    target_include_directories(UdCapSteamVRInstallationTest PRIVATE "${UI_ROOT}/src")
+    target_link_libraries(UdCapSteamVRInstallationTest PRIVATE nlohmann_json::nlohmann_json advapi32)
+    add_test(NAME UdCapSteamVRInstallationTest COMMAND UdCapSteamVRInstallationTest)
+endif()
+add_test(NAME UdCapOutputIntegration COMMAND UdCapOutputIntegration)
+add_test(NAME UdCapAdjustedOutputIntegration COMMAND UdCapOutputIntegration --adjusted)
+set_tests_properties(UdCapOutputIntegration PROPERTIES TIMEOUT 15)
+set_tests_properties(UdCapAdjustedOutputIntegration PROPERTIES TIMEOUT 15)
