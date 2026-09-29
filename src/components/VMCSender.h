@@ -7,6 +7,8 @@
 
 #include <memory>
 #include <functional>
+#include <atomic>
+#include <deque>
 #include <boost/asio.hpp>
 #include <UdCapV1Core.h>
 
@@ -19,7 +21,7 @@ public:
 class VMCSender {
 public:
     explicit VMCSender(std::string _host, uint16_t _port);
-    void add(std::shared_ptr<UdCapV1Core> _core);
+    void add(std::shared_ptr<UdCapV1Core> _core, UdTarget target);
     void remove(bool left, bool right);
     void updateController();
     ~VMCSender();
@@ -36,10 +38,9 @@ private:
 
     std::mutex queueMutex;
     std::condition_variable cv;
-    std::mutex mtx;
     std::thread sendThread;
-    std::queue<UdCapV1VMCPacket> packetQueue;
-    bool running = true;
+    std::deque<UdCapV1VMCPacket> packetQueue;
+    std::atomic_bool running{true};
 
     float leftJoyXP = 0;
     float leftJoyXN = 0;

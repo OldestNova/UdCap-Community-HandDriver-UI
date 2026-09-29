@@ -11,6 +11,9 @@
 #include <functional>
 #include <sigc++/signal.h>
 #include <any>
+#include <atomic>
+#include <thread>
+#include <mutex>
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
 #include <oscpp/server.hpp>
@@ -28,9 +31,9 @@ private:
     ~OSCServer();
     std::mutex callbackMutex;
     std::thread worker;
-    std::condition_variable workerCondition;
-    std::mutex workerMutex;
+    std::atomic_bool stopping{false};
     boost::asio::io_context io_context;
+    boost::asio::executor_work_guard<boost::asio::io_context::executor_type> workGuard;
     boost::asio::ip::udp::socket socket;
     std::array<char, 1024> recvBuffer;
     std::function<void(std::string, std::vector<std::any>)> callback;

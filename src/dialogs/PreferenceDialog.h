@@ -10,14 +10,14 @@
 #include <glibmm/i18n.h>
 #include <gtkmm.h>
 
+void populatePreferences(Gtk::Box &box, Gtk::Window &owner, std::function<void()> onSteamVRChanged = {});
+
 class PreferenceDialog: public Gtk::Window {
 public:
-    explicit PreferenceDialog();
+    explicit PreferenceDialog(std::function<void()> onSteamVRChanged = {});
     ~PreferenceDialog() override = default;
 private:
     Gtk::Box mainBox;
-    std::shared_ptr<Gtk::AlertDialog> alertDialog;
-    void updateOSCServer();
 };
 
 

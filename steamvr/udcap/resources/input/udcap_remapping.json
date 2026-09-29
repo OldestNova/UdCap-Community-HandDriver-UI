@@ -1,0 +1,24 @@
+{
+  "to_controller_type": "udcapc_glove",
+  "layouts": [
+    {
+      "priority": 100,
+      "from_controller_type": "knuckles",
+      "simulate_controller_type": true,
+      "simulate_render_model": false,
+      "simulate_HMD": false,
+      "autoremappings": [
+        { "from": "/user/hand/right/input/a", "to": "/user/hand/right/input/a" },
+        { "from": "/user/hand/right/input/b", "to": "/user/hand/right/input/b" },
+        { "from": "/user/hand/right/input/system", "to": "/user/hand/right/input/application_menu" },
+        { "from": "/user/hand/right/input/thumbstick", "to": "/user/hand/right/input/joystick" },
+        { "from": "/user/hand/right/input/trigger", "to": "/user/hand/right/input/trigger" },
+        { "from": "/user/hand/right/input/grip", "to": "/user/hand/right/input/grip" },
+        { "from": "/user/hand/right/input/trackpad", "to": "/user/hand/right/input/trackpad" }
+      ],
+      "remappings": [
+        { "from": { "path": "/user/hand/right/output/haptic" }, "remapping_mode": "delete" }
+      ]
+    }
+  ]
+}

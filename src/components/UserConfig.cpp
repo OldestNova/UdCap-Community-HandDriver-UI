@@ -15,8 +15,10 @@ void UserConfig::load() {
     if (file.good()) {
         rapidjson::IStreamWrapper isw(file);
         document.ParseStream(isw);
-        configExists_ = true;
+        configExists_ = !document.HasParseError() && document.IsObject();
+        if (!configExists_) document.SetObject();
     } else {
+        document.SetObject();
         configExists_ = false;
     }
 }
@@ -46,6 +48,7 @@ bool UserConfig::configCreated() const {
 }
 
 UserConfig::UserConfig() {
+    document.SetObject();
     configDir_ = platformdirs::user_config_dir("UdCapCommunityDriverUI", "UdCapCommunity");
     configFilePath_ = configDir_ + "/pref.json";
     configCoreDir_ = configDir_ + "/core";

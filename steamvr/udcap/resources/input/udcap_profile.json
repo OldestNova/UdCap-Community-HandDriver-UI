@@ -1,0 +1,40 @@
+{
+  "jsonid": "input_profile",
+  "controller_type": "udcapc_glove",
+  "remapping": "{udcapc}/input/udcap_remapping.json",
+  "input_bindingui_mode": "controller_handed",
+  "input_bindingui_left": { "image": "{udcapc}/icons/left.svg" },
+  "input_bindingui_right": { "image": "{udcapc}/icons/right.svg" },
+  "default_bindings": [
+    { "app_key": "steam.overlay.2079120", "binding_url": "warudo_bindings.json" },
+    { "app_key": "steam.app.2079120", "binding_url": "warudo_bindings.json" }
+  ],
+  "input_source": {
+    "/input/a": { "type": "button", "binding_image_point": [60, 75], "order": 1 },
+    "/input/b": { "type": "button", "binding_image_point": [80, 75], "order": 2 },
+    "/input/application_menu": { "type": "button", "binding_image_point": [45, 100], "order": 3 },
+    "/input/joystick": { "type": "joystick", "x": true, "y": true, "click": true, "binding_image_point": [65, 50], "order": 4 },
+    "/input/trigger": { "type": "trigger", "value": true, "click": true, "binding_image_point": [30, 110], "order": 5 },
+    "/input/grip": { "type": "trigger", "value": true, "click": true, "binding_image_point": [95, 110], "order": 6 },
+    "/input/trackpad": { "type": "button", "binding_image_point": [65, 115], "order": 7 },
+    "/input/skeleton/left": { "type": "skeleton", "side": "left", "skeleton": "/skeleton/hand/left", "binding_image_point": [20, 20] },
+    "/input/skeleton/right": { "type": "skeleton", "side": "right", "skeleton": "/skeleton/hand/right", "binding_image_point": [20, 20] },
+    "/pose/udcapc_bone_1": { "type": "pose", "visibility": "AvailableButHidden" },
+    "/pose/udcapc_bone_2": { "type": "pose", "visibility": "AvailableButHidden" },
+    "/pose/udcapc_bone_3": { "type": "pose", "visibility": "AvailableButHidden" },
+    "/pose/udcapc_bone_4": { "type": "pose", "visibility": "AvailableButHidden" },
+    "/pose/udcapc_bone_7": { "type": "pose", "visibility": "AvailableButHidden" },
+    "/pose/udcapc_bone_8": { "type": "pose", "visibility": "AvailableButHidden" },
+    "/pose/udcapc_bone_9": { "type": "pose", "visibility": "AvailableButHidden" },
+    "/pose/udcapc_bone_12": { "type": "pose", "visibility": "AvailableButHidden" },
+    "/pose/udcapc_bone_13": { "type": "pose", "visibility": "AvailableButHidden" },
+    "/pose/udcapc_bone_14": { "type": "pose", "visibility": "AvailableButHidden" },
+    "/pose/udcapc_bone_17": { "type": "pose", "visibility": "AvailableButHidden" },
+    "/pose/udcapc_bone_18": { "type": "pose", "visibility": "AvailableButHidden" },
+    "/pose/udcapc_bone_19": { "type": "pose", "visibility": "AvailableButHidden" },
+    "/pose/udcapc_bone_22": { "type": "pose", "visibility": "AvailableButHidden" },
+    "/pose/udcapc_bone_23": { "type": "pose", "visibility": "AvailableButHidden" },
+    "/pose/udcapc_bone_24": { "type": "pose", "visibility": "AvailableButHidden" },
+    "/pose/raw": { "type": "pose", "binding_image_point": [20, 20] }
+  }
+}

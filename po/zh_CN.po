@@ -1,0 +1,1090 @@
+# Chinese translations for UdCapCommunityDriverUI package.
+# Copyright (C) 2026 UdCap Community contributors
+# This file is distributed under the same license as the UdCapCommunityDriverUI package.
+# UdCap Community contributors, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: UdCapCommunityDriverUI\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-27 02:22+0800\n"
+"PO-Revision-Date: 2026-09-27 02:22+0800\n"
+"Last-Translator: UdCap Community contributors\n"
+"Language-Team: Chinese (Simplified)\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src\ui\CalibrationUI.cpp:72
+msgid "<span font='18' weight='bold'>Calibration Failed</span>"
+msgstr "<span font='18' weight='bold'>标定失败</span>"
+
+#: src\ui\CalibrationUI.cpp:47
+msgid "<span font='18' weight='bold'>Calibration Process</span>"
+msgstr "<span font='18' weight='bold'>标定过程</span>"
+
+#: src\ui\CalibrationUI.cpp:23
+msgid "<span font='18' weight='bold'>Calibration</span>"
+msgstr "<span font='18' weight='bold'>标定</span>"
+
+#: src\ui\ConsumerUI.cpp:408 src\ui\ConsumerUI.cpp:839
+#: src\ui\ConsumerUI.cpp:932 src\ui\ConsumerUI.cpp:1236
+msgid "<span font='18' weight='bold'>Found</span>"
+msgstr "<span font='18' weight='bold'>已发现设备</span>"
+
+#: src\ui\ConsumerUI.cpp:176 src\ui\ConsumerUI.cpp:815
+msgid "<span font='18' weight='bold'>No pair selected</span>"
+msgstr "<span font='18' weight='bold'>未选择手套组</span>"
+
+#: src\ui\ConsumerUI.cpp:56
+msgid "<span font='18' weight='bold'>Not Found</span>"
+msgstr "<span font='18' weight='bold'>未发现设备</span>"
+
+#: src\ui\ConsumerUI.cpp:837 src\ui\ConsumerUI.cpp:929
+msgid "<span font='18' weight='bold'>Ready</span>"
+msgstr "<span font='18' weight='bold'>就绪</span>"
+
+#: src\ui\ConsumerUI.cpp:284
+msgid "<span font='18' weight='bold'>Receivers found</span>"
+msgstr "<span font='18' weight='bold'>已发现接收器</span>"
+
+#: src\ui\ConsumerUI.cpp:838 src\ui\ConsumerUI.cpp:1232
+msgid "<span font='18' weight='bold'>Wait for Calibration</span>"
+msgstr "<span font='18' weight='bold'>等待标定</span>"
+
+#: src\ui\ConsumerUI.cpp:591
+msgid "A receiver is already assigned to another pair."
+msgstr "该接收器已分配给另一组手套。"
+
+#: src\dialogs\HandSettingsDialog.cpp
+msgid "Calibration algorithm"
+msgstr "标定算法"
+
+#: src\dialogs\HandSettingsDialog.cpp
+msgid "Default (0, Original V1)"
+msgstr "默认（0，原始 V1）"
+
+#: src\dialogs\HandSettingsDialog.cpp
+msgid "Original V1 (1)"
+msgstr "原始 V1（1）"
+
+#: src\dialogs\HandSettingsDialog.cpp
+msgid "Community V1 (20, adaptive)"
+msgstr "社区 V1（20，自适应标定）"
+
+#: src/dialogs/HandSettingsDialog.cpp
+msgid "Community V1 continuously corrects drift after the initial calibration. Occasionally open, close and spread your fingers naturally; no fixed sequence is required. Default and Original V1 do not auto-calibrate."
+msgstr "社区 V1 在首次标定后持续修正漂移。日常偶尔充分伸直、握拳和张开手指即可，无需固定顺序。默认和原始 V1 不执行自动校准。"
+
+#: src\ui\ConsumerUI.cpp:177 src\ui\ConsumerUI.cpp:816
+msgid "Add a glove pair to begin."
+msgstr "请先添加一组手套。"
+
+#: src\ui\ConsumerUI.h:94
+msgid "Add selected pair"
+msgstr "添加所选手套组"
+
+#: src\ui\CalibrationUI.cpp:135
+msgid "Straighten and bring your fingers together"
+msgstr "伸直并拢手指"
+
+#: src\ui\FirstRunUI.cpp:45
+msgid "Advanced"
+msgstr "高级模式"
+
+#: src\dialogs\PreferenceDialog.cpp:85
+msgid "Allow LAN Access"
+msgstr "允许局域网访问"
+
+#: src\ui\ConsumerUI.cpp:690 src\ui\ConsumerUI.cpp:869
+msgid "Another pair already uses this VMC destination."
+msgstr "另一组手套已使用此 VMC 目标地址。"
+
+#: src\dialogs\SteamVRTrackingDialog.cpp:52
+#: src\dialogs\ControllerSettingsDialog.cpp:41
+msgid "Apply and save"
+msgstr "应用并保存"
+
+#: src\dialogs\SteamVRTrackingDialog.cpp:15
+msgid ""
+"Assign left and right hand Tracker roles in SteamVR's Manage Trackers panel."
+msgstr "请在 SteamVR 的“管理 Tracker”面板中分配左右手 Tracker 角色。"
+
+#: src\ui\ConsumerUI.h:91
+msgid "Automatically pair matching serials"
+msgstr "按序列号自动配对"
+
+#: src\ui\ConsumerUI.cpp:19 src\ui\ConsumerUI.cpp:76 src\ui\ConsumerUI.cpp:624
+msgid "Calibrate"
+msgstr "标定"
+
+#: src\ui\CalibrationUI.cpp:13
+msgid "Calibration"
+msgstr "标定"
+
+#: src\ui\CalibrationUI.cpp:75
+msgid "Calibration failed, please try again."
+msgstr "标定失败，请重试。"
+
+#: src\dialogs\ControllerSettingsDialog.cpp:64
+msgid "Capture centered stick"
+msgstr "采集摇杆中心位置"
+
+#: src\dialogs\FirmwareDialog.cpp:103 src\dialogs\FirmwareDialog.cpp:105
+msgid "Channel must be from 0 to 255"
+msgstr "信道必须在 0 到 255 之间"
+
+#: src\dialogs\FirmwareDialog.cpp:24
+msgid "Channel:"
+msgstr "信道："
+
+#: src\ui\ConsumerUI.cpp:528
+msgid "Choose a pair"
+msgstr "选择一组手套"
+
+#: src\ui\ConsumerUI.cpp:586
+msgid "Choose an available left and right receiver."
+msgstr "请选择可用的左右手接收器。"
+
+#: src\ui\ConsumerUI.cpp:111
+msgid "Choose distinct left and right receivers."
+msgstr "请选择不同的左右手接收器。"
+
+#: src\ui\CalibrationUI.cpp:78 src\dialogs\PairDialog.cpp:27
+msgid "Close"
+msgstr "关闭"
+
+#: src\ui\ConsumerUI.cpp:951
+msgid "Controller"
+msgstr "控制器"
+
+#: src\dialogs\ControllerSettingsDialog.cpp:7
+msgid "Controller Settings"
+msgstr "控制器设置"
+
+#: src\dialogs\HandSettingsDialog.cpp:73
+#: src\dialogs\ControllerSettingsDialog.cpp:56
+#: src\dialogs\ControllerSettingsDialog.cpp:90
+#: src\dialogs\ControllerSettingsDialog.cpp:101
+msgid "Could not save settings"
+msgstr "无法保存设置"
+
+#: src\ui\ConsumerUI.cpp:953
+msgid "Data Transfer"
+msgstr "数据传输"
+
+#: src\dialogs\DataTransferDialog.cpp:132
+msgid "Data Transfer Settings"
+msgstr "数据传输设置"
+
+#: src\ui\CalibrationUI.cpp:176
+msgid "Don't move, capturing data..."
+msgstr "请保持不动，正在采集数据…"
+
+#: src\dialogs\ControllerSettingsDialog.cpp:47
+msgid "Each minimum must be below its maximum"
+msgstr "每项最小值必须小于最大值"
+
+#: src\dialogs\PreferenceDialog.cpp:79
+msgid "Enable"
+msgstr "启用"
+
+#: src\ui\ConsumerUI.h:100
+msgid "Enable SteamVR"
+msgstr "启用 SteamVR"
+
+#: src\dialogs\PreferenceDialog.cpp:112
+msgid "Enter a port from 1 to 65535"
+msgstr "请输入 1 到 65535 之间的端口"
+
+#: src\ui\ConsumerUI.cpp:702
+msgid "Enter a valid IPv4 address and port (1-65535)."
+msgstr "请输入有效的 IPv4 地址和端口（1–65535）。"
+
+#: src\ui\ErrorUI.cpp:7
+msgid "Error"
+msgstr "错误"
+
+#: src\ui\ErrorUI.cpp:23
+msgid "Exit"
+msgstr "退出"
+
+#: src\main.cpp:21
+msgid "Failed to create config directory"
+msgstr "无法创建配置目录"
+
+#: src\dialogs\ControllerSettingsDialog.cpp:65
+msgid "Finish after moving stick to all edges"
+msgstr "摇杆移动到各边缘后完成"
+
+#: src\ui\ConsumerUI.cpp:956 src\dialogs\FirmwareDialog.cpp:8
+msgid "Firmware"
+msgstr "固件"
+
+#: src\dialogs\FirmwareDialog.cpp:28
+msgid "Firmware: "
+msgstr "固件："
+
+#: src\ui\FirstRunUI.cpp:23
+msgid "First Time Config"
+msgstr "首次设置"
+
+#: src\ui\CalibrationUI.cpp:51 src\ui\CalibrationUI.cpp:131
+msgid "Make a fist"
+msgstr "握拳"
+
+#: src\dialogs\PreferenceDialog.cpp:55
+msgid "Follow system language"
+msgstr "跟随系统语言"
+
+#: src\ui\ConsumerUI.h:96
+msgid "Forget saved pair"
+msgstr "删除已保存的手套组"
+
+#: src\ui\ConsumerUI.cpp:141
+msgid "Glove pairs"
+msgstr "手套组"
+
+#: src\dialogs\ControllerSettingsDialog.cpp:19
+msgid "Grip maximum"
+msgstr "抓握最大值"
+
+#: src\dialogs\ControllerSettingsDialog.cpp:19
+msgid "Grip minimum"
+msgstr "抓握最小值"
+
+#: src\ui\ConsumerUI.cpp:952 src\dialogs\HandSettingsDialog.cpp:27
+msgid "Hand Settings"
+msgstr "手部设置"
+
+#: src\ui\ConsumerUI.cpp:644
+msgid "Host"
+msgstr "主机"
+
+#: src\dialogs\DataTransferDialog.cpp:98
+msgid "IP Address not valid"
+msgstr "IP 地址无效"
+
+#: src\dialogs\HandSettingsDialog.cpp:10
+msgid "Index distal"
+msgstr "食指远节"
+
+#: src\dialogs\HandSettingsDialog.cpp:10
+msgid "Index intermediate"
+msgstr "食指中节"
+
+#: src\dialogs\HandSettingsDialog.cpp:10
+msgid "Index proximal"
+msgstr "食指近节"
+
+#: src\dialogs\DataTransferDialog.cpp:110
+msgid "Invalid port"
+msgstr "端口无效"
+
+#: src\dialogs\ControllerSettingsDialog.cpp:101
+msgid "Joystick calibration reset"
+msgstr "已重置摇杆标定"
+
+#: src\dialogs\ControllerSettingsDialog.cpp:90
+msgid "Joystick calibration saved"
+msgstr "已保存摇杆标定"
+
+#: src\dialogs\PreferenceDialog.cpp:51
+msgid "Language"
+msgstr "语言"
+
+#: src\dialogs\SteamVRTrackingDialog.cpp:23
+msgid "Left hand"
+msgstr "左手"
+
+#: src\ui\ConsumerUI.cpp:102
+msgid "Left receiver"
+msgstr "左手接收器"
+
+#: src\dialogs\HandSettingsDialog.cpp:13
+msgid "Little distal"
+msgstr "小指远节"
+
+#: src\dialogs\HandSettingsDialog.cpp:13
+msgid "Little intermediate"
+msgstr "小指中节"
+
+#: src\dialogs\HandSettingsDialog.cpp:13
+msgid "Little proximal"
+msgstr "小指近节"
+
+#: src\dialogs\HandSettingsDialog.cpp:11
+msgid "Middle distal"
+msgstr "中指远节"
+
+#: src\dialogs\HandSettingsDialog.cpp:11
+msgid "Middle intermediate"
+msgstr "中指中节"
+
+#: src\dialogs\HandSettingsDialog.cpp:11
+msgid "Middle proximal"
+msgstr "中指近节"
+
+#: src\dialogs\PreferenceDialog.cpp:19
+msgid "Mode"
+msgstr "模式"
+
+#: src\dialogs\ControllerSettingsDialog.cpp:82
+msgid "Move the stick around its full range, then finish"
+msgstr "将摇杆沿完整范围移动，然后完成"
+
+#: src\dialogs\FirmwareDialog.cpp:41 src\dialogs\FirmwareDialog.cpp:42
+msgid "N/A"
+msgstr "不可用"
+
+#: src\dialogs\PreferenceDialog.cpp:31
+msgid "No"
+msgstr "否"
+
+#: src\ui\CalibrationUI.cpp:98
+msgid "No connected gloves are available for calibration."
+msgstr "没有可用于标定的已连接手套。"
+
+#: src\ui\ConsumerUI.cpp:17
+msgid "Not Connect"
+msgstr "未连接"
+
+#: src\dialogs\PreferenceDialog.cpp:74
+msgid "OSC Server"
+msgstr "OSC 服务器"
+
+#: src\ui\ConsumerUI.cpp:953
+msgid "OSC and UdCapQT (selected pair)"
+msgstr "OSC 与 UdCapQT（所选手套组）"
+
+#: src\dialogs\SteamVRTrackingDialog.cpp:19
+msgid "Offsets below are relative to each Tracker's local axes."
+msgstr "以下偏移量以各 Tracker 的本地坐标轴为准。"
+
+#: src\dialogs\FirmwareDialog.cpp:30
+msgid "Pair"
+msgstr "配对"
+
+#: src\ui\ConsumerUI.cpp:146
+msgid "Pair for preview and controls"
+msgstr "用于预览和控制的手套组"
+
+#: src\dialogs\PairDialog.cpp:8
+msgid "Pairing"
+msgstr "配对"
+
+#: src\dialogs\PairDialog.cpp:59
+msgid "Pairing failed"
+msgstr "配对失败"
+
+#: src\dialogs\PairDialog.cpp:18
+msgid "Pairing..."
+msgstr "正在配对…"
+
+#: src\ui\ConsumerUI.cpp:18
+msgid "Please connect your UdCap gloves."
+msgstr "请连接宇叠动捕手套。"
+
+#: src\ui\ConsumerUI.cpp:72
+msgid "Please connect your UdCap receiver."
+msgstr "请连接宇叠接收器。"
+
+#: src\ui\CalibrationUI.cpp:27
+msgid ""
+"Please follow the visual and audio instructions to calibrate your UdCap "
+"gloves."
+msgstr "请按照画面和语音提示标定手套。"
+
+#: src\ui\ConsumerUI.cpp:646 src\dialogs\PreferenceDialog.cpp:92
+msgid "Port"
+msgstr "端口"
+
+#: src\dialogs\SteamVRTrackingDialog.cpp:47
+msgid "Position %1 (m)"
+msgstr "位置 %1（米）"
+
+#: src\ui\ConsumerUI.cpp:957
+msgid "Preference"
+msgstr "偏好设置"
+
+#: src\dialogs\PreferenceDialog.cpp:12
+msgid "Preferences"
+msgstr "偏好设置"
+
+#: src\ui\CalibrationUI.cpp:139
+msgid "Spread your fingers"
+msgstr "张开手指"
+
+#: src\ui\ConsumerUI.cpp:830
+msgid "Ready"
+msgstr "就绪"
+
+#: src\dialogs\ControllerSettingsDialog.cpp:74
+msgid "Release the stick to its center, then capture"
+msgstr "松开摇杆使其回到中心，然后采集"
+
+#: src\ui\ConsumerUI.cpp:625
+msgid "Remove"
+msgstr "移除"
+
+#: src\dialogs\FirmwareDialog.cpp:27
+msgid "Reset"
+msgstr "重置"
+
+#: src\dialogs\ControllerSettingsDialog.cpp:66
+msgid "Reset joystick calibration"
+msgstr "重置摇杆标定"
+
+#: src\dialogs\PreferenceDialog.cpp:68
+msgid "Restart the application to apply the language."
+msgstr "重启应用后语言设置生效。"
+
+#: src\dialogs\SteamVRTrackingDialog.cpp:24
+msgid "Right hand"
+msgstr "右手"
+
+#: src\ui\ConsumerUI.cpp:104
+msgid "Right receiver"
+msgstr "右手接收器"
+
+#: src\dialogs\HandSettingsDialog.cpp:12
+msgid "Ring distal"
+msgstr "无名指远节"
+
+#: src\dialogs\HandSettingsDialog.cpp:12
+msgid "Ring intermediate"
+msgstr "无名指中节"
+
+#: src\dialogs\HandSettingsDialog.cpp:12
+msgid "Ring proximal"
+msgstr "无名指近节"
+
+#: src\dialogs\SteamVRTrackingDialog.cpp:49
+msgid "Rotation %1 (deg)"
+msgstr "旋转 %1（度）"
+
+#: src\dialogs\HandSettingsDialog.cpp:69
+msgid "Save joint offsets"
+msgstr "保存关节偏移"
+
+#: src\dialogs\HandSettingsDialog.cpp:73
+#: src\dialogs\ControllerSettingsDialog.cpp:56
+msgid "Saved"
+msgstr "已保存"
+
+#: src\dialogs\SteamVRTrackingDialog.cpp:71
+msgid "Saved Tracker offsets."
+msgstr "已保存 Tracker 偏移。"
+
+#: src/dialogs/SteamVRTrackingDialog.cpp
+msgid "Hand tracking preset"
+msgstr "手捕预设"
+
+#: src/dialogs/SteamVRTrackingDialog.cpp
+msgid "Custom"
+msgstr "自定义"
+
+#: src/dialogs/SteamVRTrackingDialog.cpp
+msgid "Official preset axes are shown; Z position and Y rotation are converted for SteamVR."
+msgstr "此处显示官方预设坐标；发送至 SteamVR 时会转换 Z 位置和 Y 旋转的轴向。"
+
+#: src/dialogs/SteamVRTrackingDialog.cpp
+msgid "Preset loaded. Apply and save to use it."
+msgstr "已载入预设；点击「应用并保存」后生效。"
+
+#: src\ui\ConsumerUI.cpp:119
+msgid "Saved pairs not connected"
+msgstr "未连接的已保存手套组"
+
+#: src\ui\ConsumerUI.cpp:623
+msgid "Select"
+msgstr "选择"
+
+#: src\ui\ConsumerUI.cpp:962 src\ui\ConsumerUI.cpp:1005
+#: src\ui\ConsumerUI.cpp:1019
+msgid "Select a glove pair first."
+msgstr "请先选择一组手套。"
+
+#: src\ui\ConsumerUI.cpp:285
+msgid "Select the receivers to connect."
+msgstr "请选择要连接的接收器。"
+
+#: src\dialogs\DataTransferDialog.cpp:132
+msgid "Selected Pair OSC and UdCapQT"
+msgstr "所选手套组的 OSC 与 UdCapQT"
+
+#: src\dialogs\FirmwareDialog.cpp:22
+msgid "Serial: "
+msgstr "序列号："
+
+#: src\dialogs\FirmwareDialog.cpp:26
+msgid "Set"
+msgstr "设置"
+
+#: src\ui\FirstRunUI.cpp:44
+msgid "Simple"
+msgstr "简单模式"
+
+#: src\ui\CalibrationUI.cpp:31
+msgid "Start Calibration"
+msgstr "开始标定"
+
+#: src\dialogs\ControllerSettingsDialog.cpp:63
+msgid "Start joystick calibration"
+msgstr "开始摇杆标定"
+
+#: src\ui\ConsumerUI.cpp:172
+msgid "SteamVR Settings"
+msgstr "SteamVR 设置"
+
+#: src\ui\ConsumerUI.cpp:955 src\dialogs\SteamVRTrackingDialog.cpp:11
+msgid "SteamVR Tracker Offsets"
+msgstr "SteamVR Tracker 偏移"
+
+#: src\dialogs\DataTransferDialog.cpp:162
+msgid "SteamVR controllers"
+msgstr "SteamVR 控制器"
+
+#: src\ui\ConsumerUI.cpp:170
+msgid "SteamVR pair"
+msgstr "SteamVR 手套组"
+
+#: src\dialogs\PreferenceDialog.cpp:26
+msgid "Switch to Advanced Mode"
+msgstr "切换到高级模式"
+
+#: src\dialogs\PreferenceDialog.cpp:26
+msgid "Switch to Simple Mode"
+msgstr "切换到简单模式"
+
+#: src\dialogs\PreferenceDialog.cpp:29
+msgid ""
+"Switching to advanced mode will require a restart. \n"
+"Do you want to continue?"
+msgstr "切换到高级模式需要重启应用。\n是否继续？"
+
+#: src\dialogs\PreferenceDialog.cpp:30
+msgid ""
+"Switching to simple mode will require a restart. \n"
+"Do you want to continue?"
+msgstr "切换到简单模式需要重启应用。\n是否继续？"
+
+#: src\dialogs\HandSettingsDialog.cpp:9
+msgid "Thumb distal"
+msgstr "拇指远节"
+
+#: src\dialogs\HandSettingsDialog.cpp:9
+msgid "Thumb intermediate"
+msgstr "拇指中节"
+
+#: src\dialogs\HandSettingsDialog.cpp:9
+msgid "Thumb proximal"
+msgstr "拇指近节"
+
+#: src\dialogs\ControllerSettingsDialog.cpp:20
+msgid "Trackpad maximum"
+msgstr "触控板最大值"
+
+#: src\dialogs\ControllerSettingsDialog.cpp:20
+msgid "Trackpad minimum"
+msgstr "触控板最小值"
+
+#: src\dialogs\ControllerSettingsDialog.cpp:19
+msgid "Trigger maximum"
+msgstr "扳机最大值"
+
+#: src\dialogs\ControllerSettingsDialog.cpp:19
+msgid "Trigger minimum"
+msgstr "扳机最小值"
+
+#: src\ui\ConsumerUI.cpp:38
+msgid "UdCap Community Driver - Advanced Mode"
+msgstr "宇叠社区驱动程序 — 高级模式"
+
+#: src\ui\ConsumerUI.cpp:39
+msgid "UdCap Community Driver - Consumer Edition"
+msgstr "宇叠社区驱动程序 — 简单模式"
+
+#: src\ui\EnterpriseUI.cpp:8
+msgid "UdCap Community Driver - Enterprise Edition"
+msgstr "宇叠社区驱动程序 — 高级模式"
+
+#: src\ui\ConsumerUI.cpp:1233
+msgid "UdCap Gloves are waiting for calibration."
+msgstr "手套正在等待标定。"
+
+#: src\ui\ConsumerUI.cpp:930
+msgid "UdCap running normally."
+msgstr "宇叠手套运行正常。"
+
+#: src\ui\ConsumerUI.cpp:633
+msgid "VMC"
+msgstr "VMC"
+
+#: src\ui\ConsumerUI.cpp:855
+msgid "VMC off"
+msgstr "VMC 已关闭"
+
+#: src\ui\ConsumerUI.cpp:876
+msgid "VMC sending"
+msgstr "VMC 正在发送"
+
+#: src\ui\ConsumerUI.cpp:858
+msgid "VMC waiting for both gloves"
+msgstr "VMC 正在等待两只手套"
+
+#: src\ui\CalibrationUI.cpp:148
+msgid "Wait for %1 seconds"
+msgstr "等待 %1 秒"
+
+#: src\ui\CalibrationUI.cpp:146
+msgid "Wait for 1 second"
+msgstr "等待 1 秒"
+
+#: src\ui\CalibrationUI.cpp:55
+msgid "Wait for 3 seconds"
+msgstr "等待 3 秒"
+
+msgid "Changing channel..."
+msgstr "正在切换信道…"
+
+msgid "Channel changed"
+msgstr "信道切换成功"
+
+msgid "Channel change failed (code %1)"
+msgstr "信道切换失败（代码 %1）"
+
+msgid "Channel change timed out"
+msgstr "信道切换超时"
+
+#: src\dialogs\FirmwareDialog.cpp:37
+msgid "Waiting"
+msgstr "等待中"
+
+#: src\ui\ConsumerUI.cpp:409 src\ui\ConsumerUI.cpp:933
+#: src\ui\ConsumerUI.cpp:1237
+msgid "Waiting for UdCap Gloves..."
+msgstr "正在等待宇叠手套…"
+
+#: src\ui\ConsumerUI.cpp:830
+msgid "Waiting for calibration"
+msgstr "等待标定"
+
+#: src\ui\ConsumerUI.cpp:620 src\ui\ConsumerUI.cpp:830
+msgid "Waiting for gloves"
+msgstr "等待手套"
+
+#: src\ui\FirstRunUI.cpp:30
+msgid ""
+"Welcome to use UdCap Community Driver. \n"
+"\n"
+"You can choose to use the <b>simple mode</b> (aka Consumer Driver) or "
+"<b>advanced mode</b> (aka Enterprise Driver). \n"
+"Simple mode is suitable for most users, it automatically find a pair of "
+"gloves and connect to them. \n"
+"Advanced mode pairs matching receiver serials automatically or lets you "
+"assign multiple left/right pairs manually. Each pair can have its own VMC "
+"output, and one pair can be selected for SteamVR. \n"
+"Two modes are supported by the same driver, it support consumer glove and "
+"enterprise glove in every mode. \n"
+"you can switch between them at any time. \n"
+"VMC, VRChat OSC, UdCap's QingTong UDP Broadcast and SteamVR available in "
+"both modes. SteamVR requires the included driver to be registered."
+msgstr "欢迎使用宇叠社区驱动程序。\n\n你可以选择<b>简单模式</b>（消费版）或<b>高级模式</b>（企业版）。\n简单模式适合大多数用户，会自动查找并连接一组手套。\n高级模式可按接收器序列号自动配对，也可以手动管理多组左右手套。每组可独立设置 VMC 输出，并可指定其中一组发送到 SteamVR。\n两种模式均支持消费版和企业版手套，可在偏好设置中切换。\n两种模式均支持 VMC、VRChat OSC、UdCap 青瞳 UDP 广播和 SteamVR。使用 SteamVR 前，请先注册随附的驱动。"
+
+#: src\dialogs\PreferenceDialog.cpp:31
+msgid "Yes"
+msgstr "是"
+
+#: src/ui/ConsumerUI.cpp
+msgid "Left glove"
+msgstr "左手手套"
+
+#: src/ui/ConsumerUI.cpp
+msgid "Right glove"
+msgstr "右手手套"
+
+#: src/ui/ConsumerUI.cpp
+msgid "Serial number"
+msgstr "序列号"
+
+#: src/ui/ConsumerUI.cpp
+msgid "Unknown"
+msgstr "未知"
+
+#: src/ui/ConsumerUI.cpp
+msgid "Connection"
+msgstr "连接状态"
+
+#: src/ui/ConsumerUI.cpp
+msgid "Connected"
+msgstr "已连接"
+
+#: src/ui/ConsumerUI.cpp
+msgid "Disconnected"
+msgstr "未连接"
+
+#: src/ui/ConsumerUI.cpp
+msgid "Required"
+msgstr "需要标定"
+
+#: src/ui/ConsumerUI.cpp
+msgid "Signal strength"
+msgstr "信号强度"
+
+#: src/ui/ConsumerUI.cpp
+msgid "Frame rate"
+msgstr "数据帧率"
+
+#: src/ui/ConsumerUI.cpp
+msgid "fps"
+msgstr "帧/秒"
+
+#: src/ui/ConsumerUI.cpp
+msgid "Status"
+msgstr "状态"
+
+#: src/ui/ConsumerUI.cpp
+msgid "Disabled"
+msgstr "已关闭"
+
+#: src/ui/ConsumerUI.cpp
+msgid "Sending"
+msgstr "正在发送"
+
+#: src/ui/ConsumerUI.cpp
+msgid "Active pairs"
+msgstr "发送中的手套组"
+
+#: src/ui/ConsumerUI.cpp
+msgid "Selected pair"
+msgstr "选定手套组"
+
+#: src/ui/ConsumerUI.cpp
+msgid "Glove pair"
+msgstr "手套组"
+
+#: src/dialogs/HandSettingsDialog.cpp
+msgid "Thumb"
+msgstr "拇指"
+
+#: src/dialogs/HandSettingsDialog.cpp
+msgid "Index"
+msgstr "食指"
+
+#: src/dialogs/HandSettingsDialog.cpp
+msgid "Middle"
+msgstr "中指"
+
+#: src/dialogs/HandSettingsDialog.cpp
+msgid "Ring"
+msgstr "无名指"
+
+#: src/dialogs/HandSettingsDialog.cpp
+msgid "Little"
+msgstr "小指"
+
+#: src/dialogs/HandSettingsDialog.cpp
+msgid "Proximal"
+msgstr "近节"
+
+#: src/dialogs/HandSettingsDialog.cpp
+msgid "Intermediate"
+msgstr "中节"
+
+#: src/dialogs/HandSettingsDialog.cpp
+msgid "Distal"
+msgstr "远节"
+
+#: src/ui/ConsumerUI.cpp
+msgid "None"
+msgstr "无"
+
+#: src/ui/ConsumerUI.cpp
+msgid "Destination"
+msgstr "目标地址"
+msgid "Glove"
+msgstr "手套"
+
+msgid "Glove group"
+msgstr "手套组"
+
+msgid "Gloves and groups"
+msgstr "手套与手套组"
+
+msgid "Create glove group"
+msgstr "创建手套组"
+
+msgid "Add group"
+msgstr "添加手套组"
+
+msgid "Calibrate all"
+msgstr "标定全部"
+
+msgid "Calibrate all connected glove groups"
+msgstr "标定所有已连接的手套组"
+
+msgid "Calibrate group"
+msgstr "标定此组"
+
+msgid "Selecting a receiver in another group will dissolve that group."
+msgstr "选择已属于其他手套组的接收器时，会解散原手套组。"
+
+msgid "Use as SteamVR gloves"
+msgstr "作为 SteamVR 手套"
+
+msgid "Select a glove first."
+msgstr "请先选择一只手套。"
+
+msgid "Could not open receiver."
+msgstr "无法打开接收器。"
+
+msgid "Apply"
+msgstr "应用"
+
+msgid "OSC off"
+msgstr "OSC 已关闭"
+
+msgid "OSC waiting for both gloves"
+msgstr "OSC 正在等待左右手手套"
+
+msgid "OSC sending"
+msgstr "OSC 正在发送"
+
+msgid "UdCapQT off"
+msgstr "青瞳已关闭"
+
+msgid "UdCapQT"
+msgstr "青瞳"
+
+msgid "UdCapQT waiting for both gloves"
+msgstr "青瞳正在等待左右手手套"
+
+msgid "UdCapQT sending"
+msgstr "青瞳正在发送"
+
+msgid "Dissolve group"
+msgstr "解散手套组"
+
+msgid "Ungrouped gloves"
+msgstr "未配对的手套"
+
+msgid "No receivers found"
+msgstr "未发现接收器"
+
+msgid "Show group details"
+msgstr "查看手套组详情"
+
+msgid "Receiver detected"
+msgstr "已发现接收器"
+
+msgid "Create a glove group to read live hand data."
+msgstr "创建手套组后可读取实时手部数据。"
+
+msgid "Use the glove or group selected on the Gloves and groups page."
+msgstr "此页面使用“手套与手套组”页面中选定的手套或手套组。"
+
+msgid "OSC and UdCapQT"
+msgstr "OSC 与青瞳"
+
+msgid "<span font='18' weight='bold'>Glove</span>"
+msgstr "<span font='18' weight='bold'>手套</span>"
+
+msgid "<span font='18' weight='bold'>Glove group</span>"
+msgstr "<span font='18' weight='bold'>手套组</span>"
+
+msgid "Saved pair disconnected"
+msgstr "已保存的手套组未连接"
+
+msgid "3D preview"
+msgstr "3D 预览"
+
+msgid "Show or hide the 3D hand preview. Restart after hiding to reclaim graphics driver memory."
+msgstr "显示或隐藏 3D 手部预览。关闭后重启程序可回收图形驱动占用的内存。"
+
+msgid "Restart glove"
+msgstr "重启手套"
+
+msgid "Restart gloves"
+msgstr "重启手套组"
+
+msgid "No connected gloves to restart."
+msgstr "没有可重启的已连接手套。"
+
+msgid "Restart this glove?"
+msgstr "确定重启这只手套吗？"
+
+msgid "Restart these gloves?"
+msgstr "确定重启这组手套吗？"
+
+msgid "Data transmission will stop and resume after 5 seconds."
+msgstr "数据传输将停止，并在 5 秒后恢复。"
+
+msgid "Cancel"
+msgstr "取消"
+
+msgid "Restart"
+msgstr "重启"
+
+msgid "QingTong UDP"
+msgstr "青瞳 UDP"
+
+msgid "Finger movement was too small between the fist and open hand captures."
+msgstr "握拳与伸手采集时手指变化过小，请充分握拳、伸直后重试。"
+
+msgid "Battery"
+msgstr "电量"
+
+msgid "raw"
+msgstr "原始值"
+
+msgid "OptiTrack"
+msgstr "OptiTrack"
+
+msgid "Send gloves to OptiTrack"
+msgstr "发送手套数据到 OptiTrack"
+
+msgid "OptiTrack connection failed: "
+msgstr "OptiTrack 连接失败："
+
+msgid "Output minimum (degrees)"
+msgstr "输出下限（度）"
+
+msgid "Output maximum (degrees)"
+msgstr "输出上限（度）"
+
+msgid "Response balance"
+msgstr "响应曲线中点"
+
+msgid "Bone offset (degrees)"
+msgstr "骨骼偏移（度）"
+
+msgid "Middle spread uses a constant offset."
+msgstr "中指张开使用固定角度偏移。"
+
+msgid "0.50 is linear. Settings apply to every output; values beyond the range are extrapolated."
+msgstr "0.50 为线性响应。设置应用到所有输出，超出范围的角度会继续外推。"
+
+msgid "Applied"
+msgstr "已应用"
+
+msgid "Output minimum must not exceed maximum."
+msgstr "输出下限不能大于上限。"
+
+msgid "Reset this curve"
+msgstr "重置当前曲线"
+
+msgid "Response curves"
+msgstr "响应曲线"
+
+msgid "Local Unity bone axes. VRChat OSC supports only bend and spread; other twist axes require a skeleton output."
+msgstr "Unity 本地骨骼轴向。VRChat OSC 仅支持弯曲和张指，其余扭转轴需使用骨骼输出协议。"
+
+msgid "Reset all hand adjustments"
+msgstr "重置所有手部调整"
+
+msgid "Local bone offsets"
+msgstr "本地骨骼偏移"
+
+msgid "Save hand settings"
+msgstr "保存手部设置"
+
+msgid "Thumb yaw"
+msgstr "拇指根部摆动"
+
+msgid "Thumb roll"
+msgstr "拇指根部旋转"
+
+msgid "Install SteamVR driver"
+msgstr "安装 SteamVR 驱动"
+
+msgid "Uninstall SteamVR driver"
+msgstr "卸载 SteamVR 驱动"
+
+msgid "Refresh"
+msgstr "刷新"
+
+msgid "Checking SteamVR…"
+msgstr "正在检测 SteamVR…"
+
+msgid "SteamVR was not detected."
+msgstr "未检测到 SteamVR。"
+
+msgid "SteamVR detected · udcapc driver installed"
+msgstr "已检测到 SteamVR · udcapc 驱动已安装"
+
+msgid "SteamVR detected · udcapc driver not installed"
+msgstr "已检测到 SteamVR · udcapc 驱动未安装"
+
+msgid "SteamVR detected · this build does not include the udcapc driver"
+msgstr "已检测到 SteamVR · 此构建未包含 udcapc 驱动"
+
+msgid "SteamVR operation failed: "
+msgstr "SteamVR 操作失败："
+
+msgid "Done. Restart SteamVR to apply the driver change."
+msgstr "操作完成。请重启 SteamVR 使驱动变更生效。"
+
+msgid "The official udcap driver is also registered. Manage enabled add-ons in SteamVR to avoid duplicate controllers."
+msgstr "检测到官方 udcap 驱动也已注册。请在 SteamVR 的附加组件管理中选择启用的驱动，避免出现重复控制器。"
+
+msgid "Thumb distal bend"
+msgstr "拇指远节弯曲"
+
+msgid "Thumb intermediate bend"
+msgstr "拇指中节弯曲"
+
+msgid "Thumb proximal bend"
+msgstr "拇指近节弯曲"
+
+msgid "Thumb spread"
+msgstr "拇指张开"
+
+msgid "Index distal bend"
+msgstr "食指远节弯曲"
+
+msgid "Index intermediate bend"
+msgstr "食指中节弯曲"
+
+msgid "Index proximal bend"
+msgstr "食指近节弯曲"
+
+msgid "Index spread"
+msgstr "食指张开"
+
+msgid "Middle distal bend"
+msgstr "中指远节弯曲"
+
+msgid "Middle intermediate bend"
+msgstr "中指中节弯曲"
+
+msgid "Middle proximal bend"
+msgstr "中指近节弯曲"
+
+msgid "Middle spread"
+msgstr "中指张开"
+
+msgid "Ring distal bend"
+msgstr "无名指远节弯曲"
+
+msgid "Ring intermediate bend"
+msgstr "无名指中节弯曲"
+
+msgid "Ring proximal bend"
+msgstr "无名指近节弯曲"
+
+msgid "Ring spread"
+msgstr "无名指张开"
+
+msgid "Little distal bend"
+msgstr "小指远节弯曲"
+
+msgid "Little intermediate bend"
+msgstr "小指中节弯曲"
+
+msgid "Little proximal bend"
+msgstr "小指近节弯曲"
+
+msgid "Little spread"
+msgstr "小指张开"

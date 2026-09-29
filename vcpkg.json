@@ -1,0 +1,37 @@
+{
+  "name": "udcap-community-handdriver-ui",
+  "version-string": "0.1.0",
+  "builtin-baseline": "ee6a47dac031930715bea2e6dfb9ad60caaa5d83",
+  "dependencies": [
+    {
+      "name": "gettext",
+      "features": [
+        "tools"
+      ],
+      "host": true
+    },
+    "gtkmm",
+    {
+      "name": "pkgconf",
+      "host": true
+    },
+    "rapidjson",
+    "nng",
+    "openvr"
+  ],
+  "features": {
+    "preview3d": {
+      "description": "Build the 3D hand preview",
+      "dependencies": [
+        "assimp"
+      ]
+    },
+    "steamvr": {
+      "description": "Build the native SteamVR driver and enable the OpenVR client",
+      "supports": "(windows & (x64 | x86)) | (linux & (x64 | x86 | arm64))",
+      "dependencies": [
+        "openvr"
+      ]
+    }
+  }
+}

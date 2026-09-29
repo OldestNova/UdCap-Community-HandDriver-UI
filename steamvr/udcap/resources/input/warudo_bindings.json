@@ -1,0 +1,29 @@
+{
+  "controller_type": "udcapc_glove",
+  "name": "UdCapCD hand skeletons for Warudo",
+  "description": "Left and right measured glove skeletons, poses and controller inputs.",
+  "bindings": {
+    "/actions/default": {
+      "poses": [
+        { "output": "/actions/default/in/pose", "path": "/user/hand/left/pose/raw" },
+        { "output": "/actions/default/in/pose", "path": "/user/hand/right/pose/raw" }
+      ],
+      "skeleton": [
+        { "output": "/actions/default/in/skeletonlefthand", "path": "/user/hand/left/input/skeleton/left" },
+        { "output": "/actions/default/in/skeletonrighthand", "path": "/user/hand/right/input/skeleton/right" }
+      ],
+      "sources": [
+        { "path": "/user/hand/left/input/trigger", "mode": "trigger", "inputs": {
+          "click": { "output": "/actions/default/in/grabpinch" } } },
+        { "path": "/user/hand/right/input/trigger", "mode": "trigger", "inputs": {
+          "click": { "output": "/actions/default/in/grabpinch" } } },
+        { "path": "/user/hand/left/input/grip", "mode": "trigger", "inputs": {
+          "click": { "output": "/actions/default/in/grabgrip" },
+          "pull": { "output": "/actions/default/in/squeeze" } } },
+        { "path": "/user/hand/right/input/grip", "mode": "trigger", "inputs": {
+          "click": { "output": "/actions/default/in/grabgrip" },
+          "pull": { "output": "/actions/default/in/squeeze" } } }
+      ]
+    }
+  }
+}

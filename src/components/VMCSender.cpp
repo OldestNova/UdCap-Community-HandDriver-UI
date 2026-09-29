@@ -3,7 +3,9 @@
 //
 
 #include "VMCSender.h"
+#include "PoseCoordinates.h"
 #include <chrono>
+#include <algorithm>
 #include <oscpp/client.hpp>
 #include <iostream>
 
@@ -14,15 +16,17 @@ VMCSender::VMCSender(std::string _host, uint16_t _port): host(_host), port(_port
     endpoints = resolver.resolve(boost::asio::ip::udp::endpoint{addr, port});
     sendThread = std::thread([this]() {
         while (running) {
-            if (packetQueue.empty()) {
-                std::unique_lock lk(mtx);
-                cv.wait_for(lk, std::chrono::milliseconds(10));
-                continue;
+            UdCapV1VMCPacket p;
+            {
+                std::unique_lock lk(queueMutex);
+                cv.wait(lk, [this]() {
+                    return !running || !packetQueue.empty();
+                });
+                if (!running) break;
+                p = std::move(packetQueue.front());
+                packetQueue.pop_front();
             }
             try {
-                std::lock_guard lk(queueMutex);
-                UdCapV1VMCPacket p = packetQueue.front();
-                packetQueue.pop();
                 UdTarget target = p.target;
                 std::shared_ptr<UdCapV1MCUPacket> data = p.data;
                 std::string prefix;
@@ -34,10 +38,8 @@ VMCSender::VMCSender(std::string _host, uint16_t _port): host(_host), port(_port
                 if (data->commandType == CMD_SKELETON_QUATERNION) {
                     char buffer[128 * 15] = {0};
                     OSCPP::Client::Packet packet(buffer, 128 * 15);
-                    uint64_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
-                            std::chrono::system_clock::now().time_since_epoch()).count();
-                    HandQuaternion q = data->skeletonQuaternion;
-                    packet.openBundle(timestamp)
+                    HandQuaternion q = poseForVMC(data->skeletonQuaternion);
+                    packet.openBundle(1) // OSC timetag 1 means apply immediately.
                             .openMessage("/VMC/Ext/Bone/Pos", 8)
                             .string((prefix + "ThumbDistal").c_str())
                             .float32(0).float32(0).float32(0)
@@ -202,7 +204,11 @@ VMCSender::VMCSender(std::string _host, uint16_t _port): host(_host), port(_port
 }
 
 VMCSender::~VMCSender() {
-    running = false;
+    {
+        std::lock_guard lk(queueMutex);
+        running = false;
+    }
+    cv.notify_all();
     if (sendThread.joinable()) {
         sendThread.join();
     }
@@ -229,11 +235,13 @@ void VMCSender::remove(bool left, bool right) {
     }
 }
 
-void VMCSender::add(std::shared_ptr<UdCapV1Core> _core) {
+void VMCSender::add(std::shared_ptr<UdCapV1Core> _core, UdTarget target) {
     if (!_core) {
         throw std::invalid_argument("Core cannot be null");
     }
-    UdTarget target = _core->getTarget();
+    if (target != UD_TARGET_LEFT_HAND && target != UD_TARGET_RIGHT_HAND) {
+        throw std::invalid_argument("VMC hand target must be left or right");
+    }
     if (target == UD_TARGET_LEFT_HAND && coreLeft) {
         throw std::runtime_error("Left hand already exists");
     }
@@ -247,12 +255,22 @@ void VMCSender::add(std::shared_ptr<UdCapV1Core> _core) {
         coreRight = _core;
     }
     std::function<void()> unlisten = _core->listen([this, target](std::shared_ptr<UdCapV1MCUPacket> data) {
+        if (!running || !data) return;
+        const auto type = data->commandType;
+        if (type != CMD_SKELETON_QUATERNION &&
+            type != CMD_INPUT_JOYSTICK && type != CMD_INPUT_BUTTON) return;
         std::lock_guard lk(queueMutex);
+        if (!running) return;
+        // These packets contain complete hand or controller state. Retaining
+        // older states makes the VMC receiver replay stale poses in bursts.
+        std::erase_if(packetQueue, [target, type](const UdCapV1VMCPacket &queued) {
+            return queued.target == target && queued.data && queued.data->commandType == type;
+        });
         UdCapV1VMCPacket p;
         p.target = target;
-        p.data = data;
-        packetQueue.push(p);
-        cv.notify_all();
+        p.data = std::move(data);
+        packetQueue.push_back(std::move(p));
+        cv.notify_one();
     });
     if (target == UD_TARGET_LEFT_HAND) {
         unlistenLeft = unlisten;
@@ -265,9 +283,7 @@ void VMCSender::add(std::shared_ptr<UdCapV1Core> _core) {
 void VMCSender::updateController() {
     char buffer[4096] = {0};
     OSCPP::Client::Packet packet(buffer, 4096);
-    uint64_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::system_clock::now().time_since_epoch()).count();
-    packet.openBundle(timestamp)
+    packet.openBundle(1) // OSC timetag 1 means apply immediately.
             .openMessage("/VMC/Ext/Blend/Val", 2).string("LeftJoyX_Positive").float32(leftJoyXP).closeMessage()
             .openMessage("/VMC/Ext/Blend/Val", 2).string("LeftJoyX_Negative").float32(leftJoyXN).closeMessage()
             .openMessage("/VMC/Ext/Blend/Val", 2).string("LeftJoyY_Positive").float32(leftJoyYP).closeMessage()

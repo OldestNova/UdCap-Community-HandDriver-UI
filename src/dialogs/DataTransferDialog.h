@@ -18,7 +18,8 @@ public:
                                 std::function<void(bool enable, std::string host, uint16_t port)> _vmcCallback,
                                 std::function<void(bool enable, std::string host, uint16_t port)> _oscCallback,
                                 std::function<void(bool enable, std::string host, uint16_t port)> _broadcastCallback,
-                                std::function<void(bool enable)> _vrCallback);
+                                std::function<void(bool enable)> _vrCallback,
+                                bool showVmc = true, bool showVr = true);
 private:
     std::function<void(bool enable, std::string host, uint16_t port)> vmcCallback;
     std::function<void(bool enable, std::string host, uint16_t port)> oscCallback;

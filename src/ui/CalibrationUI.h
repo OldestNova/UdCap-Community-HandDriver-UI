@@ -21,6 +21,7 @@ enum CalibrationStep {
 class CalibrationUI: public Gtk::Window {
 public:
     explicit CalibrationUI(std::vector<std::shared_ptr<UdCapV1Core>> _core);
+    ~CalibrationUI() override;
     void startProcess();
     void stopProcess();
 private:
@@ -43,10 +44,11 @@ private:
     Gtk::Label mETitleLabel;
     Gtk::Label mEInfoLabel;
     Gtk::Button mEReturnButton;
-    int calibrationStep = 5;
-    int calibrationSubStep = 10;
+    static constexpr int calibrationWaitTicks = 30; // 100 ms timer, 3 seconds per pose.
+    int remainingTicks = calibrationWaitTicks;
     CalibrationStep currentCalibrationStep = CALIBRATION_STEP_FIST;
     bool on_calibration_progressbar_timeout();
+    void showCurrentStep();
 };
 
 

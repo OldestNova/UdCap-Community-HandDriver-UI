@@ -6,13 +6,13 @@
 #include "components/UserConfig.h"
 #include <regex>
 #include <iostream>
+#include <sstream>
 
 class FeatureRow : public Gtk::Box {
 public:
     FeatureRow(bool default_toggle ,const Glib::ustring& name, const Glib::ustring& default_ip, int default_port,
                std::function<void(bool,const std::string&, int)> _on_change)
             : Gtk::Box(Gtk::Orientation::HORIZONTAL, 10), grid(),
-              default_ip(default_ip), default_port(default_port),
               on_change(_on_change) {
 
         set_margin(5);
@@ -69,8 +69,6 @@ private:
     Gtk::Entry ip_entry;
     Gtk::Entry port_entry;
     Gtk::Label warning_label;
-    std::string default_ip;
-    int default_port;
     std::function<void(bool, const std::string&, int)> on_change;
 
     bool validate_ip(const std::string& ip) {
@@ -98,31 +96,24 @@ private:
 
         if (ip.empty() || !validate_ip(ip)) {
             warning_label.set_text(_("IP Address not valid"));
-            ip_entry.set_text(default_ip);
             valid = false;
         }
 
-        int port = default_port;
+        int port = 0;
         try {
-            int parsed = std::stoi(port_text);
+            std::size_t parsedLength = 0;
+            int parsed = std::stoi(port_text, &parsedLength);
+            if (parsedLength != port_text.size()) throw std::invalid_argument("port");
             if (parsed <= 0 || parsed > 65535) throw std::out_of_range("port");
             port = parsed;
         } catch (...) {
-            port_entry.set_text(std::to_string(default_port));
             warning_label.set_text(_("Invalid port"));
             valid = false;
         }
 
         warning_label.set_visible(!valid);
 
-        if (!valid) {
-            if (toggle.get_active()) toggle.set_active(false);
-            toggle.set_sensitive(false);
-        } else {
-            toggle.set_sensitive(true);
-        }
-
-        on_change(toggle.get_active(), ip_entry.get_text(), port);
+        if (valid) on_change(toggle.get_active(), ip, port);
     }
 };
 
@@ -131,23 +122,27 @@ DataTransferDialog::DataTransferDialog(std::string configPrefix,
         std::function<void(bool enable, std::string host, uint16_t port)> _vmcCallback,
                                        std::function<void(bool enable, std::string host, uint16_t port)> _oscCallback,
                                        std::function<void(bool enable, std::string host, uint16_t port)> _broadcastCallback,
-                                       std::function<void(bool enable)> _vrCallback):
+                                       std::function<void(bool enable)> _vrCallback,
+                                       bool showVmc, bool showVr):
         vmcCallback(_vmcCallback),
         oscCallback(_oscCallback),
         broadcastCallback(_broadcastCallback),
         vrCallback(_vrCallback)
 {
-    set_title(_("Data Transfer Settings"));
+    set_title(showVmc ? _("Data Transfer Settings") : _("Selected Pair OSC and UdCapQT"));
     set_default_size(550, 260);
 
     vbox.set_orientation(Gtk::Orientation::VERTICAL);
     vbox.set_spacing(10);
     vbox.set_margin(10);
 
-    auto row1 = Gtk::make_managed<FeatureRow>(UserConfig::getInstance().get<bool>(configPrefix + "/vmc/enabled", false),
-                                              "VMC",
-                                              UserConfig::getInstance().get<std::string>(configPrefix + "/vmc/host", "127.0.0.1"),
-                                              UserConfig::getInstance().get<int>(configPrefix + "/vmc/port", 39540), vmcCallback);
+    if (showVmc) {
+        auto row1 = Gtk::make_managed<FeatureRow>(UserConfig::getInstance().get<bool>(configPrefix + "/vmc/enabled", false),
+                                                  "VMC",
+                                                  UserConfig::getInstance().get<std::string>(configPrefix + "/vmc/host", "127.0.0.1"),
+                                                  UserConfig::getInstance().get<int>(configPrefix + "/vmc/port", 39540), vmcCallback);
+        vbox.append(*row1);
+    }
 
     auto row2 = Gtk::make_managed<FeatureRow>(UserConfig::getInstance().get<bool>(configPrefix + "/osc/enabled", false),
                                               "VRChat OSC",
@@ -155,14 +150,22 @@ DataTransferDialog::DataTransferDialog(std::string configPrefix,
                                               UserConfig::getInstance().get<int>(configPrefix + "/osc/port", 9000)
                                               ,oscCallback);
 
-    auto row3 = Gtk::make_managed<FeatureRow>(UserConfig::getInstance().get<bool>(configPrefix + "/udCapQingTong/enabled", false), "UdCapQT",
+    auto row3 = Gtk::make_managed<FeatureRow>(UserConfig::getInstance().get<bool>(configPrefix + "/udCapQingTong/enabled", false), _("QingTong UDP"),
                                               UserConfig::getInstance().get<std::string>(configPrefix + "/udCapQingTong/host", "127.0.0.1"),
                                               UserConfig::getInstance().get<int>(configPrefix + "/udCapQingTong/port", 6666)
                                               , broadcastCallback);
 
-    vbox.append(*row1);
     vbox.append(*row2);
     vbox.append(*row3);
+
+    if (showVr) {
+        auto vrToggle = Gtk::make_managed<Gtk::CheckButton>(_("SteamVR controllers"));
+        vrToggle->set_active(UserConfig::getInstance().get<bool>(configPrefix + "/vr/enabled", false));
+        vrToggle->signal_toggled().connect([this, vrToggle]() {
+            vrCallback(vrToggle->get_active());
+        });
+        vbox.append(*vrToggle);
+    }
 
     set_child(vbox);
 }

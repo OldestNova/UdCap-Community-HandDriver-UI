@@ -7,17 +7,23 @@
 
 #include <memory>
 #include <functional>
+#include <atomic>
+#include <cstdint>
 #include <boost/asio.hpp>
 #include <rapidjson/document.h>
 #include <UdCapV1Core.h>
 
 struct UdCapV1QTStatus {
+    std::string receiverKey;
     UdTarget target;
-    HandQuaternion mBones;
+    HandQuaternion mBones{};
     uint64_t frame = 0;
     std::string deviceName;
-    UdCapV1HandCaliStat calibrateStat;
-    int battery = 100;
+    UdCapV1HandCaliStat calibrateStat{};
+    int battery = 0; // Official five-step level; zero means unavailable.
+    bool hasPose = false;
+    uint64_t sentFrame = 0;
+    std::chrono::steady_clock::time_point poseTime{};
     float mJoyX = 0;
     float mJoyY = 0;
     float mButtonA = 0;
@@ -30,14 +36,15 @@ struct UdCapV1QTStatus {
     float mTrackpad = 0;
     float mGrip = 0;
     float mTrigger = 0;
-    BoneQuaternion rIMU;
+    BoneQuaternion rIMU{0, 0, 0, 1};
     rapidjson::Document doc;
 };
 
 class QTSender {
 public:
     explicit QTSender(std::string _host, uint16_t _port);
-    uint32_t add(std::shared_ptr<UdCapV1Core> _core);
+    uint32_t add(std::shared_ptr<UdCapV1Core> _core,
+                 std::string receiverKey = {}, uint32_t deviceId = 0);
     void remove(uint32_t fdDev);
     ~QTSender();
 private:
@@ -56,7 +63,7 @@ private:
     boost::asio::ip::udp::socket socket;
     boost::asio::ip::basic_resolver_results<boost::asio::ip::udp> endpoints;
     std::thread sendThread;
-    bool running = true;
+    std::atomic_bool running{true};
 };
 
 

@@ -3,6 +3,7 @@
 //
 
 #include "QTSender.h"
+#include "QingTongPose.h"
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
@@ -11,11 +12,12 @@ uint32_t QTSender::getNextFd(std::string fName) {
     if (usedFd.find(fName) != usedFd.end()) {
         return usedFd[fName];
     }
-    return nextFd++;
+    const uint32_t fd = nextFd++;
+    usedFd[fName] = fd;
+    return fd;
 }
 
 QTSender::QTSender(std::string _host, uint16_t _port): host(_host), port(_port), io_context(), socket(io_context), endpoints() {
-    socket.open(boost::asio::ip::udp::v4());
     socket.open(boost::asio::ip::udp::v4());
     boost::asio::ip::udp::resolver resolver(io_context);
     auto addr = boost::asio::ip::make_address(host);
@@ -29,8 +31,11 @@ QTSender::QTSender(std::string _host, uint16_t _port): host(_host), port(_port),
                 std::this_thread::sleep_for(std::chrono::milliseconds(8) - ms);
             }
             last = std::chrono::system_clock::now();
+            std::vector<std::string> outgoing;
             std::unique_lock lk(mtx);
             for (auto& status: statusMap) {
+                if (!status.second->hasPose || status.second->sentFrame == status.second->frame ||
+                    std::chrono::steady_clock::now() - status.second->poseTime > std::chrono::seconds(2)) continue;
                 status.second->doc["Frame"] = status.second->frame;
                 status.second->doc["CalibrationStatus"] = (status.second->calibrateStat == 4 ? 3 : 0);
                 status.second->doc["Battery"] = status.second->battery;
@@ -160,8 +165,13 @@ QTSender::QTSender(std::string _host, uint16_t _port): host(_host), port(_port),
                 rapidjson::StringBuffer buffer;
                 rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
                 status.second->doc.Accept(writer);
+                outgoing.emplace_back(buffer.GetString(), buffer.GetSize());
+                status.second->sentFrame = status.second->frame;
+            }
+            lk.unlock();
+            for (const auto &message : outgoing) {
                 try {
-                    socket.send_to(boost::asio::buffer(buffer.GetString(), buffer.GetSize()), *endpoints.begin());
+                    socket.send_to(boost::asio::buffer(message), *endpoints.begin());
                 } catch (std::exception& e) {
                     // Handle exception if needed
                 }
@@ -188,7 +198,8 @@ QTSender::~QTSender() {
     }
 }
 
-uint32_t QTSender::add(std::shared_ptr<UdCapV1Core> _core) {
+uint32_t QTSender::add(std::shared_ptr<UdCapV1Core> _core,
+                       std::string receiverKey, uint32_t deviceId) {
     if (_core == nullptr) {
         throw std::invalid_argument("Core cannot be null");
     }
@@ -198,16 +209,25 @@ uint32_t QTSender::add(std::shared_ptr<UdCapV1Core> _core) {
             throw std::runtime_error("Core already exists");
         }
     }
-    uint32_t fd = getNextFd(_core->getUDCapSerial());
+    if (receiverKey.empty()) receiverKey = _core->getUDCapSerial();
+    if (receiverKey.empty()) receiverKey = std::to_string(reinterpret_cast<std::uintptr_t>(_core.get()));
+    uint32_t fd = getNextFd(receiverKey);
     core[fd] = _core;
     statusMap[fd] = std::make_unique<UdCapV1QTStatus>();
+    statusMap[fd]->receiverKey = receiverKey;
+    statusMap[fd]->calibrateStat = _core->getHandCalibrationStatus();
+    if (const auto battery = _core->getBattery()) statusMap[fd]->battery = battery->first;
     {
         statusMap[fd]->doc.SetObject();
         rapidjson::Document::AllocatorType &allocator = statusMap[fd]->doc.GetAllocator();
-        statusMap[fd]->doc.AddMember("DeviceID", fd, allocator);
+        statusMap[fd]->doc.AddMember("DeviceID", deviceId, allocator);
+        const std::string name = _core->getUDCapSerial().empty() ? receiverKey : _core->getUDCapSerial();
+        rapidjson::Value deviceName;
+        deviceName.SetString(name.c_str(), static_cast<rapidjson::SizeType>(name.size()), allocator);
+        statusMap[fd]->doc.AddMember("DeviceName", deviceName, allocator);
         statusMap[fd]->doc.AddMember("Frame", 0, allocator);
         statusMap[fd]->doc.AddMember("CalibrationStatus", 0, allocator);
-        statusMap[fd]->doc.AddMember("Battery", 100, allocator);
+        statusMap[fd]->doc.AddMember("Battery", statusMap[fd]->battery, allocator);
         rapidjson::Value bones(rapidjson::kArrayType);
         for (int i = 0; i < (15); i++) {
             rapidjson::Value bone(rapidjson::kArrayType);
@@ -233,12 +253,22 @@ uint32_t QTSender::add(std::shared_ptr<UdCapV1Core> _core) {
         statusMap[fd]->doc.AddMember("joyButton", false, allocator);
         statusMap[fd]->doc.AddMember("menu", false, allocator);
     }
-    std::function<void()> un = _core->listen([this, fd, _core](std::shared_ptr<UdCapV1MCUPacket> data) {
+    std::function<void()> un = _core->listen([this, fd](std::shared_ptr<UdCapV1MCUPacket> data) {
         std::lock_guard<std::mutex> lock(mtx);
-        if (data->commandType == CMD_SKELETON_QUATERNION) {
-            statusMap[fd]->mBones = data->skeletonQuaternion;
+        if (statusMap.find(fd) == statusMap.end()) return;
+        if (data->commandType == CMD_SERIAL && !data->deviceSerialNum.empty()) {
+            auto &document = statusMap[fd]->doc;
+            document["DeviceName"].SetString(data->deviceSerialNum.c_str(),
+                static_cast<rapidjson::SizeType>(data->deviceSerialNum.size()), document.GetAllocator());
         } else if (data->commandType == CMD_READY) {
-            statusMap[fd]->calibrateStat = _core->getHandCalibrationStatus();
+            // CMD_READY already carries the state; keep packet handling
+            // independent of a second read from Core.
+            statusMap[fd]->calibrateStat = data->isReady
+                ? UDCAP_V1_HAND_CALI_STAT_COMPLETED : UDCAP_V1_HAND_CALI_STAT_NONE;
+            if (!data->isReady) statusMap[fd]->hasPose = false;
+        } else if (data->commandType == CMD_LINK_STATE && data->udState == UD_INIT_STATE_NOT_CONNECT) {
+            statusMap[fd]->hasPose = false;
+            statusMap[fd]->battery = 0;
         } else if (data->commandType == CMD_BATTERY) {
             statusMap[fd]->battery = data->battery;
         } else if (data->commandType == CMD_INPUT_JOYSTICK) {
@@ -256,12 +286,20 @@ uint32_t QTSender::add(std::shared_ptr<UdCapV1Core> _core) {
             statusMap[fd]->mGrip = data->button.grip;
             statusMap[fd]->mTrigger = data->button.trigger;
         } else if (data->commandType == CMD_ANGLE) {
+            statusMap[fd]->mBones = poseForQingTong(data->result, data->angleHand, data->angleBoneOffset);
+            statusMap[fd]->hasPose = true;
+            statusMap[fd]->calibrateStat = UDCAP_V1_HAND_CALI_STAT_COMPLETED;
+            statusMap[fd]->poseTime = std::chrono::steady_clock::now();
+            ++statusMap[fd]->frame;
             statusMap[fd]->rIMU.x = data->result[24];
             statusMap[fd]->rIMU.y = data->result[25];
             statusMap[fd]->rIMU.z = data->result[26];
             statusMap[fd]->rIMU.w = data->result[27];
+            auto &imu = statusMap[fd]->rIMU;
+            const double norm = std::sqrt(imu.x*imu.x + imu.y*imu.y + imu.z*imu.z + imu.w*imu.w);
+            if (!std::isfinite(norm) || norm < .0001) imu = {0, 0, 0, 1};
+            else { imu.x /= norm; imu.y /= norm; imu.z /= norm; imu.w /= norm; }
         }
-        statusMap[fd]->frame++;
     });
     unlisten[fd] = un;
     statusMap[fd]->deviceName = _core->getUDCapSerial();
@@ -270,16 +308,18 @@ uint32_t QTSender::add(std::shared_ptr<UdCapV1Core> _core) {
 }
 
 void QTSender::remove(uint32_t fdDev) {
-    std::lock_guard<std::mutex> lock(mtx);
-    auto it = core.find(fdDev);
-    if (it != core.end()) {
-        if (unlisten.find(fdDev) != unlisten.end()) {
-            unlisten[fdDev]();
-            unlisten.erase(fdDev);
-        }
-        std::string serial = it->second->getUDCapSerial();
+    std::function<void()> unsubscribe;
+    std::shared_ptr<UdCapV1Core> keepAlive;
+    {
+        std::lock_guard lock(mtx);
+        const auto it = core.find(fdDev);
+        if (it == core.end()) return;
+        keepAlive = std::move(it->second);
         core.erase(it);
+        unsubscribe = std::move(unlisten[fdDev]);
+        unlisten.erase(fdDev);
         statusMap.erase(fdDev);
-        usedFd[serial] = fdDev;
     }
+    // Unsubscribe waits for an in-flight callback, which also needs mtx.
+    if (unsubscribe) unsubscribe();
 }

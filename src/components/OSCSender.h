@@ -7,6 +7,8 @@
 
 #include <memory>
 #include <functional>
+#include <atomic>
+#include <deque>
 #include <boost/asio.hpp>
 #include <UdCapV1Core.h>
 
@@ -35,10 +37,9 @@ private:
 
     std::mutex queueMutex;
     std::condition_variable cv;
-    std::mutex mtx;
     std::thread sendThread;
-    std::queue<UdCapV1OSCPacket> packetQueue;
-    bool running = true;
+    std::deque<UdCapV1OSCPacket> packetQueue;
+    std::atomic_bool running{true};
 };
 
 

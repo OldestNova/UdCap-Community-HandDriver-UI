@@ -1,0 +1,116 @@
+{
+  "components": {
+    "bone_1": {
+      "filename": "bone_1.obj",
+      "motion": {
+        "type": "pose_component",
+        "pose_path": "/pose/udcapc_bone_1"
+      }
+    },
+    "bone_2": {
+      "filename": "bone_2.obj",
+      "motion": {
+        "type": "pose_component",
+        "pose_path": "/pose/udcapc_bone_2"
+      }
+    },
+    "bone_3": {
+      "filename": "bone_3.obj",
+      "motion": {
+        "type": "pose_component",
+        "pose_path": "/pose/udcapc_bone_3"
+      }
+    },
+    "bone_4": {
+      "filename": "bone_4.obj",
+      "motion": {
+        "type": "pose_component",
+        "pose_path": "/pose/udcapc_bone_4"
+      }
+    },
+    "bone_7": {
+      "filename": "bone_7.obj",
+      "motion": {
+        "type": "pose_component",
+        "pose_path": "/pose/udcapc_bone_7"
+      }
+    },
+    "bone_8": {
+      "filename": "bone_8.obj",
+      "motion": {
+        "type": "pose_component",
+        "pose_path": "/pose/udcapc_bone_8"
+      }
+    },
+    "bone_9": {
+      "filename": "bone_9.obj",
+      "motion": {
+        "type": "pose_component",
+        "pose_path": "/pose/udcapc_bone_9"
+      }
+    },
+    "bone_12": {
+      "filename": "bone_12.obj",
+      "motion": {
+        "type": "pose_component",
+        "pose_path": "/pose/udcapc_bone_12"
+      }
+    },
+    "bone_13": {
+      "filename": "bone_13.obj",
+      "motion": {
+        "type": "pose_component",
+        "pose_path": "/pose/udcapc_bone_13"
+      }
+    },
+    "bone_14": {
+      "filename": "bone_14.obj",
+      "motion": {
+        "type": "pose_component",
+        "pose_path": "/pose/udcapc_bone_14"
+      }
+    },
+    "bone_17": {
+      "filename": "bone_17.obj",
+      "motion": {
+        "type": "pose_component",
+        "pose_path": "/pose/udcapc_bone_17"
+      }
+    },
+    "bone_18": {
+      "filename": "bone_18.obj",
+      "motion": {
+        "type": "pose_component",
+        "pose_path": "/pose/udcapc_bone_18"
+      }
+    },
+    "bone_19": {
+      "filename": "bone_19.obj",
+      "motion": {
+        "type": "pose_component",
+        "pose_path": "/pose/udcapc_bone_19"
+      }
+    },
+    "bone_22": {
+      "filename": "bone_22.obj",
+      "motion": {
+        "type": "pose_component",
+        "pose_path": "/pose/udcapc_bone_22"
+      }
+    },
+    "bone_23": {
+      "filename": "bone_23.obj",
+      "motion": {
+        "type": "pose_component",
+        "pose_path": "/pose/udcapc_bone_23"
+      }
+    },
+    "bone_24": {
+      "filename": "bone_24.obj",
+      "motion": {
+        "type": "pose_component",
+        "pose_path": "/pose/udcapc_bone_24"
+      }
+    }
+  }
+}

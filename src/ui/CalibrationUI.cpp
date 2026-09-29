@@ -48,16 +48,15 @@ CalibrationUI::CalibrationUI(std::vector<std::shared_ptr<UdCapV1Core>> _core):
     mCTitleLabel.set_justify(Gtk::Justification::CENTER);
     mCTitleLabel.set_halign(Gtk::Align::CENTER);
 
-    mCInfoLabel.set_label(_("Fist"));
+    mCInfoLabel.set_label(_("Make a fist"));
     mCInfoLabel.set_justify(Gtk::Justification::CENTER);
     mCInfoLabel.set_halign(Gtk::Align::CENTER);
 
-    mCInstructionLabel.set_label(_("Wait for 5 seconds"));
+    mCInstructionLabel.set_label(_("Wait for 3 seconds"));
     mCInstructionLabel.set_justify(Gtk::Justification::CENTER);
     mCInstructionLabel.set_halign(Gtk::Align::CENTER);
 
     mCProgressBar.set_fraction(1.0);
-    calibrationStep = 5;
 
     mCVbox.append(mCTitleLabel);
     mCVbox.append(mCInfoLabel);
@@ -75,24 +74,44 @@ CalibrationUI::CalibrationUI(std::vector<std::shared_ptr<UdCapV1Core>> _core):
     mEInfoLabel.set_label(_("Calibration failed, please try again."));
     mEInfoLabel.set_justify(Gtk::Justification::CENTER);
     mEInfoLabel.set_halign(Gtk::Align::CENTER);
+    mEInfoLabel.set_wrap(true);
     mEReturnButton.set_label(_("Close"));
     mEReturnButton.signal_clicked().connect([this]() {
-        destroy();
+        close();
     });
+    signal_close_request().connect([this]() {
+        stopProcess();
+        return false;
+    }, false);
     mEVbox.append(mETitleLabel);
     mEVbox.append(mEInfoLabel);
     mEVbox.append(mEReturnButton);
 }
 
+CalibrationUI::~CalibrationUI() {
+    stopProcess();
+}
+
 void CalibrationUI::startProcess() {
     if (!mCProcessBarTimeout.connected()) {
+        if (core.empty()) {
+            mEInfoLabel.set_text(_("No connected gloves are available for calibration."));
+            set_child(mEVbox);
+            return;
+        }
         currentCalibrationStep = CALIBRATION_STEP_FIST;
-        calibrationStep = 5;
-        calibrationSubStep = 10;
+        remainingTicks = calibrationWaitTicks;
+        showCurrentStep();
         set_child(mCVbox);
-        for (const auto& c: core) {
-            c->clearCalibrationData(UDCAP_V1_HAND_CALI_TYPE_ALL);
-            c->runCalibration(UDCAP_V1_DEVICE_CALI_TYPE_HAND);
+        try {
+            for (const auto& c: core) {
+                c->clearCalibrationData(UDCAP_V1_HAND_CALI_TYPE_ALL);
+                c->runCalibration(UDCAP_V1_DEVICE_CALI_TYPE_HAND);
+            }
+        } catch (const std::exception &e) {
+            mEInfoLabel.set_text(e.what());
+            set_child(mEVbox);
+            return;
         }
         mCProcessBarTimeout = Glib::signal_timeout().connect(sigc::mem_fun(*this, &CalibrationUI::on_calibration_progressbar_timeout), 100);
     }
@@ -105,75 +124,83 @@ void CalibrationUI::stopProcess() {
 }
 
 bool CalibrationUI::on_calibration_progressbar_timeout() {
-    calibrationSubStep--;
-    if (calibrationStep >= 0) {
-        switch (currentCalibrationStep) {
-            case CALIBRATION_STEP_FIST: {
-                mCInfoLabel.set_label(_("Fist"));
-                break;
-            }
-            case CALIBRATION_STEP_ADDUCTION: {
-                mCInfoLabel.set_label(_("Adduction"));
-                break;
-            }
-            case CALIBRATION_STEP_PROTRACT: {
-                mCInfoLabel.set_label(_("Protract"));
-                break;
-            }
+    --remainingTicks;
+    mCProgressBar.set_fraction(static_cast<double>(remainingTicks) / calibrationWaitTicks);
+    if (remainingTicks > 0) {
+        if (remainingTicks % 10 == 0) {
+            const int seconds = remainingTicks / 10;
+            mCInstructionLabel.set_label(seconds == 1
+                ? _("Wait for 1 second")
+                : Glib::ustring::compose(_("Wait for %1 seconds"), seconds));
         }
-        if (calibrationSubStep < 0) {
-            mCProgressBar.set_fraction(calibrationStep / 5.0);
-            if (calibrationStep == 0) {
-                mCInstructionLabel.set_label(_("Wait for 1 seconds"));
-            } else {
-                std::stringstream waitTextStream;
-                waitTextStream << _("Wait for ") << calibrationStep << _(" seconds");
-                mCInstructionLabel.set_label(waitTextStream.str());
-            }
-            calibrationStep--;
-            calibrationSubStep = 10;
-        }
-    } else {
-        if (calibrationSubStep < 0) {
-            calibrationStep--;
-            calibrationSubStep = 10;
-        }
-        if (calibrationSubStep == 5) {
-            for (const auto& c: core) {
-                if (currentCalibrationStep == CALIBRATION_STEP_FIST) {
-                    c->captureCalibrationData(UDCAP_V1_HAND_CALI_TYPE_FIST);
-                } else if (currentCalibrationStep == CALIBRATION_STEP_ADDUCTION) {
-                    c->captureCalibrationData(UDCAP_V1_HAND_CALI_TYPE_ADDUCTION);
-                } else if (currentCalibrationStep == CALIBRATION_STEP_PROTRACT) {
-                    c->captureCalibrationData(UDCAP_V1_HAND_CALI_TYPE_PROTRACT);
-                }
-            }
-        }
-        mCInstructionLabel.set_label(_("Don't move, capturing data..."));
-        mCProgressBar.pulse();
-        if (calibrationStep < -4) {
-            calibrationStep = 5;
-            if (currentCalibrationStep == CALIBRATION_STEP_FIST) {
-                currentCalibrationStep = CALIBRATION_STEP_ADDUCTION;
-            } else if (currentCalibrationStep == CALIBRATION_STEP_ADDUCTION) {
-                currentCalibrationStep = CALIBRATION_STEP_PROTRACT;
-            } else if (currentCalibrationStep == CALIBRATION_STEP_PROTRACT) {
-                bool isSuccess = true;
-                stopProcess();
-                for (const auto& c: core) {
-                    try {
-                        c->completeCalibration(UDCAP_V1_DEVICE_CALI_TYPE_HAND);
-                    } catch (std::runtime_error &e) {
-                        isSuccess = false;
-                    }
-                }
-                if (isSuccess) {
-                    destroy();
-                } else {
-                    set_child(mEVbox);
-                }
-            }
-        }
+        return true;
     }
+
+    try {
+        for (const auto& c: core) {
+            if (currentCalibrationStep == CALIBRATION_STEP_FIST) {
+                c->captureCalibrationData(UDCAP_V1_HAND_CALI_TYPE_FIST);
+            } else if (currentCalibrationStep == CALIBRATION_STEP_ADDUCTION) {
+                c->captureCalibrationData(UDCAP_V1_HAND_CALI_TYPE_ADDUCTION);
+            } else {
+                c->captureCalibrationData(UDCAP_V1_HAND_CALI_TYPE_PROTRACT);
+            }
+        }
+    } catch (const std::exception &e) {
+        stopProcess();
+        mEInfoLabel.set_text(e.what());
+        set_child(mEVbox);
+        return false;
+    }
+
+    if (currentCalibrationStep == CALIBRATION_STEP_FIST) {
+        currentCalibrationStep = CALIBRATION_STEP_ADDUCTION;
+    } else if (currentCalibrationStep == CALIBRATION_STEP_ADDUCTION) {
+        currentCalibrationStep = CALIBRATION_STEP_PROTRACT;
+    } else {
+        stopProcess();
+        std::string failureDetails;
+        for (const auto& c: core) {
+            try {
+                c->completeCalibration(UDCAP_V1_DEVICE_CALI_TYPE_HAND);
+            } catch (const std::exception &e) {
+                if (!failureDetails.empty()) failureDetails += "\n";
+                std::string glove = c->getUDCapSerial();
+                if (glove.empty()) {
+                    glove = c->getTarget() == UD_TARGET_RIGHT_HAND
+                        ? _("Right glove") : _("Left glove");
+                }
+                const std::string reason = std::string(e.what()) == "Calibration failed"
+                    ? _("Finger movement was too small between the fist and open hand captures.")
+                    : e.what();
+                failureDetails += glove + ": " + reason;
+            }
+        }
+        if (failureDetails.empty()) close();
+        else {
+            mEInfoLabel.set_text(failureDetails);
+            set_child(mEVbox);
+        }
+        return false;
+    }
+
+    remainingTicks = calibrationWaitTicks;
+    showCurrentStep();
     return true;
+}
+
+void CalibrationUI::showCurrentStep() {
+    switch (currentCalibrationStep) {
+        case CALIBRATION_STEP_FIST:
+            mCInfoLabel.set_label(_("Make a fist"));
+            break;
+        case CALIBRATION_STEP_ADDUCTION:
+            mCInfoLabel.set_label(_("Straighten and bring your fingers together"));
+            break;
+        case CALIBRATION_STEP_PROTRACT:
+            mCInfoLabel.set_label(_("Spread your fingers"));
+            break;
+    }
+    mCInstructionLabel.set_label(_("Wait for 3 seconds"));
+    mCProgressBar.set_fraction(1.0);
 }

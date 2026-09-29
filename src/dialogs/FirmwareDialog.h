@@ -6,6 +6,7 @@
 #define UDCAPCOMMUNITYDRIVERUI_FIRMWAREDIALOG_H
 
 #include <cstdint>
+#include <atomic>
 #include <memory>
 #include <vector>
 #include <glibmm/i18n.h>
@@ -13,18 +14,24 @@
 #include <UdCapV1Core.h>
 #include "PairDialog.h"
 
-class FirmwareDialog: public Gtk::Window {
+class FirmwarePanel: public Gtk::ScrolledWindow {
 public:
-    explicit FirmwareDialog(std::vector<std::shared_ptr<UdCapV1Core>> _cores);
-    ~FirmwareDialog();
+    FirmwarePanel();
+    ~FirmwarePanel() override;
+    void setCores(std::vector<std::shared_ptr<UdCapV1Core>> newCores);
 private:
     std::vector<std::shared_ptr<UdCapV1Core>> cores;
     std::vector<std::function<void()>> unlisten;
     Gtk::Box mainBox;
-    Gtk::ScrolledWindow scrolledWindow;
-    sigc::connection mTimerConnection;
     std::unique_ptr<PairDialog> pairDialog;
-    bool onTimer();
+    std::shared_ptr<std::atomic_bool> alive = std::make_shared<std::atomic_bool>(true);
+};
+
+class FirmwareDialog: public Gtk::Window {
+public:
+    explicit FirmwareDialog(std::vector<std::shared_ptr<UdCapV1Core>> cores);
+private:
+    FirmwarePanel panel;
 };
 
 

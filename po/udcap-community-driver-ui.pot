@@ -1,0 +1,1095 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the UdCapCommunityDriverUI package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: UdCapCommunityDriverUI\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-27 02:22+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src\ui\CalibrationUI.cpp:72
+msgid "<span font='18' weight='bold'>Calibration Failed</span>"
+msgstr ""
+
+#: src\ui\CalibrationUI.cpp:47
+msgid "<span font='18' weight='bold'>Calibration Process</span>"
+msgstr ""
+
+#: src\ui\CalibrationUI.cpp:23
+msgid "<span font='18' weight='bold'>Calibration</span>"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:408 src\ui\ConsumerUI.cpp:839
+#: src\ui\ConsumerUI.cpp:932 src\ui\ConsumerUI.cpp:1236
+msgid "<span font='18' weight='bold'>Found</span>"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:176 src\ui\ConsumerUI.cpp:815
+msgid "<span font='18' weight='bold'>No pair selected</span>"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:56
+msgid "<span font='18' weight='bold'>Not Found</span>"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:837 src\ui\ConsumerUI.cpp:929
+msgid "<span font='18' weight='bold'>Ready</span>"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:284
+msgid "<span font='18' weight='bold'>Receivers found</span>"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:838 src\ui\ConsumerUI.cpp:1232
+msgid "<span font='18' weight='bold'>Wait for Calibration</span>"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:591
+msgid "A receiver is already assigned to another pair."
+msgstr ""
+
+#: src\dialogs\HandSettingsDialog.cpp
+msgid "Calibration algorithm"
+msgstr ""
+
+#: src\dialogs\HandSettingsDialog.cpp
+msgid "Default (0, Original V1)"
+msgstr ""
+
+#: src\dialogs\HandSettingsDialog.cpp
+msgid "Original V1 (1)"
+msgstr ""
+
+#: src\dialogs\HandSettingsDialog.cpp
+msgid "Community V1 (20, adaptive)"
+msgstr ""
+
+#: src/dialogs/HandSettingsDialog.cpp
+msgid "Community V1 continuously corrects drift after the initial calibration. Occasionally open, close and spread your fingers naturally; no fixed sequence is required. Default and Original V1 do not auto-calibrate."
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:177 src\ui\ConsumerUI.cpp:816
+msgid "Add a glove pair to begin."
+msgstr ""
+
+#: src\ui\ConsumerUI.h:94
+msgid "Add selected pair"
+msgstr ""
+
+#: src\ui\CalibrationUI.cpp:135
+msgid "Straighten and bring your fingers together"
+msgstr ""
+
+#: src\ui\FirstRunUI.cpp:45
+msgid "Advanced"
+msgstr ""
+
+#: src\dialogs\PreferenceDialog.cpp:85
+msgid "Allow LAN Access"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:690 src\ui\ConsumerUI.cpp:869
+msgid "Another pair already uses this VMC destination."
+msgstr ""
+
+#: src\dialogs\SteamVRTrackingDialog.cpp:52
+#: src\dialogs\ControllerSettingsDialog.cpp:41
+msgid "Apply and save"
+msgstr ""
+
+#: src\dialogs\SteamVRTrackingDialog.cpp:15
+msgid ""
+"Assign left and right hand Tracker roles in SteamVR's Manage Trackers panel."
+msgstr ""
+
+#: src\ui\ConsumerUI.h:91
+msgid "Automatically pair matching serials"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:19 src\ui\ConsumerUI.cpp:76 src\ui\ConsumerUI.cpp:624
+msgid "Calibrate"
+msgstr ""
+
+#: src\ui\CalibrationUI.cpp:13
+msgid "Calibration"
+msgstr ""
+
+#: src\ui\CalibrationUI.cpp:75
+msgid "Calibration failed, please try again."
+msgstr ""
+
+#: src\dialogs\ControllerSettingsDialog.cpp:64
+msgid "Capture centered stick"
+msgstr ""
+
+#: src\dialogs\FirmwareDialog.cpp:103 src\dialogs\FirmwareDialog.cpp:105
+msgid "Channel must be from 0 to 255"
+msgstr ""
+
+#: src\dialogs\FirmwareDialog.cpp:24
+msgid "Channel:"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:528
+msgid "Choose a pair"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:586
+msgid "Choose an available left and right receiver."
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:111
+msgid "Choose distinct left and right receivers."
+msgstr ""
+
+#: src\ui\CalibrationUI.cpp:78 src\dialogs\PairDialog.cpp:27
+msgid "Close"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:951
+msgid "Controller"
+msgstr ""
+
+#: src\dialogs\ControllerSettingsDialog.cpp:7
+msgid "Controller Settings"
+msgstr ""
+
+#: src\dialogs\HandSettingsDialog.cpp:73
+#: src\dialogs\ControllerSettingsDialog.cpp:56
+#: src\dialogs\ControllerSettingsDialog.cpp:90
+#: src\dialogs\ControllerSettingsDialog.cpp:101
+msgid "Could not save settings"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:953
+msgid "Data Transfer"
+msgstr ""
+
+#: src\dialogs\DataTransferDialog.cpp:132
+msgid "Data Transfer Settings"
+msgstr ""
+
+#: src\ui\CalibrationUI.cpp:176
+msgid "Don't move, capturing data..."
+msgstr ""
+
+#: src\dialogs\ControllerSettingsDialog.cpp:47
+msgid "Each minimum must be below its maximum"
+msgstr ""
+
+#: src\dialogs\PreferenceDialog.cpp:79
+msgid "Enable"
+msgstr ""
+
+#: src\ui\ConsumerUI.h:100
+msgid "Enable SteamVR"
+msgstr ""
+
+#: src\dialogs\PreferenceDialog.cpp:112
+msgid "Enter a port from 1 to 65535"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:702
+msgid "Enter a valid IPv4 address and port (1-65535)."
+msgstr ""
+
+#: src\ui\ErrorUI.cpp:7
+msgid "Error"
+msgstr ""
+
+#: src\ui\ErrorUI.cpp:23
+msgid "Exit"
+msgstr ""
+
+#: src\main.cpp:21
+msgid "Failed to create config directory"
+msgstr ""
+
+#: src\dialogs\ControllerSettingsDialog.cpp:65
+msgid "Finish after moving stick to all edges"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:956 src\dialogs\FirmwareDialog.cpp:8
+msgid "Firmware"
+msgstr ""
+
+#: src\dialogs\FirmwareDialog.cpp:28
+msgid "Firmware: "
+msgstr ""
+
+#: src\ui\FirstRunUI.cpp:23
+msgid "First Time Config"
+msgstr ""
+
+#: src\ui\CalibrationUI.cpp:51 src\ui\CalibrationUI.cpp:131
+msgid "Make a fist"
+msgstr ""
+
+#: src\dialogs\PreferenceDialog.cpp:55
+msgid "Follow system language"
+msgstr ""
+
+#: src\ui\ConsumerUI.h:96
+msgid "Forget saved pair"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:141
+msgid "Glove pairs"
+msgstr ""
+
+#: src\dialogs\ControllerSettingsDialog.cpp:19
+msgid "Grip maximum"
+msgstr ""
+
+#: src\dialogs\ControllerSettingsDialog.cpp:19
+msgid "Grip minimum"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:952 src\dialogs\HandSettingsDialog.cpp:27
+msgid "Hand Settings"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:644
+msgid "Host"
+msgstr ""
+
+#: src\dialogs\DataTransferDialog.cpp:98
+msgid "IP Address not valid"
+msgstr ""
+
+#: src\dialogs\HandSettingsDialog.cpp:10
+msgid "Index distal"
+msgstr ""
+
+#: src\dialogs\HandSettingsDialog.cpp:10
+msgid "Index intermediate"
+msgstr ""
+
+#: src\dialogs\HandSettingsDialog.cpp:10
+msgid "Index proximal"
+msgstr ""
+
+#: src\dialogs\DataTransferDialog.cpp:110
+msgid "Invalid port"
+msgstr ""
+
+#: src\dialogs\ControllerSettingsDialog.cpp:101
+msgid "Joystick calibration reset"
+msgstr ""
+
+#: src\dialogs\ControllerSettingsDialog.cpp:90
+msgid "Joystick calibration saved"
+msgstr ""
+
+#: src\dialogs\PreferenceDialog.cpp:51
+msgid "Language"
+msgstr ""
+
+#: src\dialogs\SteamVRTrackingDialog.cpp:23
+msgid "Left hand"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:102
+msgid "Left receiver"
+msgstr ""
+
+#: src\dialogs\HandSettingsDialog.cpp:13
+msgid "Little distal"
+msgstr ""
+
+#: src\dialogs\HandSettingsDialog.cpp:13
+msgid "Little intermediate"
+msgstr ""
+
+#: src\dialogs\HandSettingsDialog.cpp:13
+msgid "Little proximal"
+msgstr ""
+
+#: src\dialogs\HandSettingsDialog.cpp:11
+msgid "Middle distal"
+msgstr ""
+
+#: src\dialogs\HandSettingsDialog.cpp:11
+msgid "Middle intermediate"
+msgstr ""
+
+#: src\dialogs\HandSettingsDialog.cpp:11
+msgid "Middle proximal"
+msgstr ""
+
+#: src\dialogs\PreferenceDialog.cpp:19
+msgid "Mode"
+msgstr ""
+
+#: src\dialogs\ControllerSettingsDialog.cpp:82
+msgid "Move the stick around its full range, then finish"
+msgstr ""
+
+#: src\dialogs\FirmwareDialog.cpp:41 src\dialogs\FirmwareDialog.cpp:42
+msgid "N/A"
+msgstr ""
+
+#: src\dialogs\PreferenceDialog.cpp:31
+msgid "No"
+msgstr ""
+
+#: src\ui\CalibrationUI.cpp:98
+msgid "No connected gloves are available for calibration."
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:17
+msgid "Not Connect"
+msgstr ""
+
+#: src\dialogs\PreferenceDialog.cpp:74
+msgid "OSC Server"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:953
+msgid "OSC and UdCapQT (selected pair)"
+msgstr ""
+
+#: src\dialogs\SteamVRTrackingDialog.cpp:19
+msgid "Offsets below are relative to each Tracker's local axes."
+msgstr ""
+
+#: src\dialogs\FirmwareDialog.cpp:30
+msgid "Pair"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:146
+msgid "Pair for preview and controls"
+msgstr ""
+
+#: src\dialogs\PairDialog.cpp:8
+msgid "Pairing"
+msgstr ""
+
+#: src\dialogs\PairDialog.cpp:59
+msgid "Pairing failed"
+msgstr ""
+
+#: src\dialogs\PairDialog.cpp:18
+msgid "Pairing..."
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:18
+msgid "Please connect your UdCap gloves."
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:72
+msgid "Please connect your UdCap receiver."
+msgstr ""
+
+#: src\ui\CalibrationUI.cpp:27
+msgid ""
+"Please follow the visual and audio instructions to calibrate your UdCap "
+"gloves."
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:646 src\dialogs\PreferenceDialog.cpp:92
+msgid "Port"
+msgstr ""
+
+#: src\dialogs\SteamVRTrackingDialog.cpp:47
+msgid "Position %1 (m)"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:957
+msgid "Preference"
+msgstr ""
+
+#: src\dialogs\PreferenceDialog.cpp:12
+msgid "Preferences"
+msgstr ""
+
+#: src\ui\CalibrationUI.cpp:139
+msgid "Spread your fingers"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:830
+msgid "Ready"
+msgstr ""
+
+#: src\dialogs\ControllerSettingsDialog.cpp:74
+msgid "Release the stick to its center, then capture"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:625
+msgid "Remove"
+msgstr ""
+
+#: src\dialogs\FirmwareDialog.cpp:27
+msgid "Reset"
+msgstr ""
+
+#: src\dialogs\ControllerSettingsDialog.cpp:66
+msgid "Reset joystick calibration"
+msgstr ""
+
+#: src\dialogs\PreferenceDialog.cpp:68
+msgid "Restart the application to apply the language."
+msgstr ""
+
+#: src\dialogs\SteamVRTrackingDialog.cpp:24
+msgid "Right hand"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:104
+msgid "Right receiver"
+msgstr ""
+
+#: src\dialogs\HandSettingsDialog.cpp:12
+msgid "Ring distal"
+msgstr ""
+
+#: src\dialogs\HandSettingsDialog.cpp:12
+msgid "Ring intermediate"
+msgstr ""
+
+#: src\dialogs\HandSettingsDialog.cpp:12
+msgid "Ring proximal"
+msgstr ""
+
+#: src\dialogs\SteamVRTrackingDialog.cpp:49
+msgid "Rotation %1 (deg)"
+msgstr ""
+
+#: src\dialogs\HandSettingsDialog.cpp:69
+msgid "Save joint offsets"
+msgstr ""
+
+#: src\dialogs\HandSettingsDialog.cpp:73
+#: src\dialogs\ControllerSettingsDialog.cpp:56
+msgid "Saved"
+msgstr ""
+
+#: src\dialogs\SteamVRTrackingDialog.cpp:71
+msgid "Saved Tracker offsets."
+msgstr ""
+
+#: src/dialogs/SteamVRTrackingDialog.cpp
+msgid "Hand tracking preset"
+msgstr ""
+
+#: src/dialogs/SteamVRTrackingDialog.cpp
+msgid "Custom"
+msgstr ""
+
+#: src/dialogs/SteamVRTrackingDialog.cpp
+msgid "Official preset axes are shown; Z position and Y rotation are converted for SteamVR."
+msgstr ""
+
+#: src/dialogs/SteamVRTrackingDialog.cpp
+msgid "Preset loaded. Apply and save to use it."
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:119
+msgid "Saved pairs not connected"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:623
+msgid "Select"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:962 src\ui\ConsumerUI.cpp:1005
+#: src\ui\ConsumerUI.cpp:1019
+msgid "Select a glove pair first."
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:285
+msgid "Select the receivers to connect."
+msgstr ""
+
+#: src\dialogs\DataTransferDialog.cpp:132
+msgid "Selected Pair OSC and UdCapQT"
+msgstr ""
+
+#: src\dialogs\FirmwareDialog.cpp:22
+msgid "Serial: "
+msgstr ""
+
+#: src\dialogs\FirmwareDialog.cpp:26
+msgid "Set"
+msgstr ""
+
+#: src\ui\FirstRunUI.cpp:44
+msgid "Simple"
+msgstr ""
+
+#: src\ui\CalibrationUI.cpp:31
+msgid "Start Calibration"
+msgstr ""
+
+#: src\dialogs\ControllerSettingsDialog.cpp:63
+msgid "Start joystick calibration"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:172
+msgid "SteamVR Settings"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:955 src\dialogs\SteamVRTrackingDialog.cpp:11
+msgid "SteamVR Tracker Offsets"
+msgstr ""
+
+#: src\dialogs\DataTransferDialog.cpp:162
+msgid "SteamVR controllers"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:170
+msgid "SteamVR pair"
+msgstr ""
+
+#: src\dialogs\PreferenceDialog.cpp:26
+msgid "Switch to Advanced Mode"
+msgstr ""
+
+#: src\dialogs\PreferenceDialog.cpp:26
+msgid "Switch to Simple Mode"
+msgstr ""
+
+#: src\dialogs\PreferenceDialog.cpp:29
+msgid ""
+"Switching to advanced mode will require a restart. \n"
+"Do you want to continue?"
+msgstr ""
+
+#: src\dialogs\PreferenceDialog.cpp:30
+msgid ""
+"Switching to simple mode will require a restart. \n"
+"Do you want to continue?"
+msgstr ""
+
+#: src\dialogs\HandSettingsDialog.cpp:9
+msgid "Thumb distal"
+msgstr ""
+
+#: src\dialogs\HandSettingsDialog.cpp:9
+msgid "Thumb intermediate"
+msgstr ""
+
+#: src\dialogs\HandSettingsDialog.cpp:9
+msgid "Thumb proximal"
+msgstr ""
+
+#: src\dialogs\ControllerSettingsDialog.cpp:20
+msgid "Trackpad maximum"
+msgstr ""
+
+#: src\dialogs\ControllerSettingsDialog.cpp:20
+msgid "Trackpad minimum"
+msgstr ""
+
+#: src\dialogs\ControllerSettingsDialog.cpp:19
+msgid "Trigger maximum"
+msgstr ""
+
+#: src\dialogs\ControllerSettingsDialog.cpp:19
+msgid "Trigger minimum"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:38
+msgid "UdCap Community Driver - Advanced Mode"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:39
+msgid "UdCap Community Driver - Consumer Edition"
+msgstr ""
+
+#: src\ui\EnterpriseUI.cpp:8
+msgid "UdCap Community Driver - Enterprise Edition"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:1233
+msgid "UdCap Gloves are waiting for calibration."
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:930
+msgid "UdCap running normally."
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:633
+msgid "VMC"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:855
+msgid "VMC off"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:876
+msgid "VMC sending"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:858
+msgid "VMC waiting for both gloves"
+msgstr ""
+
+#: src\ui\CalibrationUI.cpp:148
+msgid "Wait for %1 seconds"
+msgstr ""
+
+#: src\ui\CalibrationUI.cpp:146
+msgid "Wait for 1 second"
+msgstr ""
+
+#: src\ui\CalibrationUI.cpp:55
+msgid "Wait for 3 seconds"
+msgstr ""
+
+msgid "Changing channel..."
+msgstr ""
+
+msgid "Channel changed"
+msgstr ""
+
+msgid "Channel change failed (code %1)"
+msgstr ""
+
+msgid "Channel change timed out"
+msgstr ""
+
+#: src\dialogs\FirmwareDialog.cpp:37
+msgid "Waiting"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:409 src\ui\ConsumerUI.cpp:933
+#: src\ui\ConsumerUI.cpp:1237
+msgid "Waiting for UdCap Gloves..."
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:830
+msgid "Waiting for calibration"
+msgstr ""
+
+#: src\ui\ConsumerUI.cpp:620 src\ui\ConsumerUI.cpp:830
+msgid "Waiting for gloves"
+msgstr ""
+
+#: src\ui\FirstRunUI.cpp:30
+msgid ""
+"Welcome to use UdCap Community Driver. \n"
+"\n"
+"You can choose to use the <b>simple mode</b> (aka Consumer Driver) or "
+"<b>advanced mode</b> (aka Enterprise Driver). \n"
+"Simple mode is suitable for most users, it automatically find a pair of "
+"gloves and connect to them. \n"
+"Advanced mode pairs matching receiver serials automatically or lets you "
+"assign multiple left/right pairs manually. Each pair can have its own VMC "
+"output, and one pair can be selected for SteamVR. \n"
+"Two modes are supported by the same driver, it support consumer glove and "
+"enterprise glove in every mode. \n"
+"you can switch between them at any time. \n"
+"VMC, VRChat OSC, UdCap's QingTong UDP Broadcast and SteamVR available in "
+"both modes. SteamVR requires the included driver to be registered."
+msgstr ""
+
+#: src\dialogs\PreferenceDialog.cpp:31
+msgid "Yes"
+msgstr ""
+
+#: src/ui/ConsumerUI.cpp
+msgid "Left glove"
+msgstr ""
+
+#: src/ui/ConsumerUI.cpp
+msgid "Right glove"
+msgstr ""
+
+#: src/ui/ConsumerUI.cpp
+msgid "Serial number"
+msgstr ""
+
+#: src/ui/ConsumerUI.cpp
+msgid "Unknown"
+msgstr ""
+
+#: src/ui/ConsumerUI.cpp
+msgid "Connection"
+msgstr ""
+
+#: src/ui/ConsumerUI.cpp
+msgid "Connected"
+msgstr ""
+
+#: src/ui/ConsumerUI.cpp
+msgid "Disconnected"
+msgstr ""
+
+#: src/ui/ConsumerUI.cpp
+msgid "Required"
+msgstr ""
+
+#: src/ui/ConsumerUI.cpp
+msgid "Signal strength"
+msgstr ""
+
+#: src/ui/ConsumerUI.cpp
+msgid "Unavailable (driver does not expose RSSI)"
+msgstr ""
+
+#: src/ui/ConsumerUI.cpp
+msgid "Frame rate"
+msgstr ""
+
+#: src/ui/ConsumerUI.cpp
+msgid "fps"
+msgstr ""
+
+#: src/ui/ConsumerUI.cpp
+msgid "Status"
+msgstr ""
+
+#: src/ui/ConsumerUI.cpp
+msgid "Disabled"
+msgstr ""
+
+#: src/ui/ConsumerUI.cpp
+msgid "Sending"
+msgstr ""
+
+#: src/ui/ConsumerUI.cpp
+msgid "Active pairs"
+msgstr ""
+
+#: src/ui/ConsumerUI.cpp
+msgid "Selected pair"
+msgstr ""
+
+#: src/ui/ConsumerUI.cpp
+msgid "Glove pair"
+msgstr ""
+
+#: src/dialogs/HandSettingsDialog.cpp
+msgid "Thumb"
+msgstr ""
+
+#: src/dialogs/HandSettingsDialog.cpp
+msgid "Index"
+msgstr ""
+
+#: src/dialogs/HandSettingsDialog.cpp
+msgid "Middle"
+msgstr ""
+
+#: src/dialogs/HandSettingsDialog.cpp
+msgid "Ring"
+msgstr ""
+
+#: src/dialogs/HandSettingsDialog.cpp
+msgid "Little"
+msgstr ""
+
+#: src/dialogs/HandSettingsDialog.cpp
+msgid "Proximal"
+msgstr ""
+
+#: src/dialogs/HandSettingsDialog.cpp
+msgid "Intermediate"
+msgstr ""
+
+#: src/dialogs/HandSettingsDialog.cpp
+msgid "Distal"
+msgstr ""
+
+#: src/ui/ConsumerUI.cpp
+msgid "None"
+msgstr ""
+
+#: src/ui/ConsumerUI.cpp
+msgid "Destination"
+msgstr ""
+msgid "Glove"
+msgstr ""
+
+msgid "Glove group"
+msgstr ""
+
+msgid "Gloves and groups"
+msgstr ""
+
+msgid "Create glove group"
+msgstr ""
+
+msgid "Add group"
+msgstr ""
+
+msgid "Calibrate all"
+msgstr ""
+
+msgid "Calibrate all connected glove groups"
+msgstr ""
+
+msgid "Calibrate group"
+msgstr ""
+
+msgid "Selecting a receiver in another group will dissolve that group."
+msgstr ""
+
+msgid "Use as SteamVR gloves"
+msgstr ""
+
+msgid "Select a glove first."
+msgstr ""
+
+msgid "Could not open receiver."
+msgstr ""
+
+msgid "Apply"
+msgstr ""
+
+msgid "OSC off"
+msgstr ""
+
+msgid "OSC waiting for both gloves"
+msgstr ""
+
+msgid "OSC sending"
+msgstr ""
+
+msgid "UdCapQT off"
+msgstr ""
+
+msgid "UdCapQT"
+msgstr ""
+
+msgid "UdCapQT waiting for both gloves"
+msgstr ""
+
+msgid "UdCapQT sending"
+msgstr ""
+
+msgid "Dissolve group"
+msgstr ""
+
+msgid "Ungrouped gloves"
+msgstr ""
+
+msgid "No receivers found"
+msgstr ""
+
+msgid "Show group details"
+msgstr ""
+
+msgid "Receiver detected"
+msgstr ""
+
+msgid "Create a glove group to read live hand data."
+msgstr ""
+
+msgid "Use the glove or group selected on the Gloves and groups page."
+msgstr ""
+
+msgid "OSC and UdCapQT"
+msgstr ""
+
+msgid "<span font='18' weight='bold'>Glove</span>"
+msgstr ""
+
+msgid "<span font='18' weight='bold'>Glove group</span>"
+msgstr ""
+
+msgid "Saved pair disconnected"
+msgstr ""
+
+msgid "3D preview"
+msgstr ""
+
+msgid "Show or hide the 3D hand preview. Restart after hiding to reclaim graphics driver memory."
+msgstr ""
+
+msgid "Restart glove"
+msgstr ""
+
+msgid "Restart gloves"
+msgstr ""
+
+msgid "No connected gloves to restart."
+msgstr ""
+
+msgid "Restart this glove?"
+msgstr ""
+
+msgid "Restart these gloves?"
+msgstr ""
+
+msgid "Data transmission will stop and resume after 5 seconds."
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Restart"
+msgstr ""
+
+msgid "QingTong UDP"
+msgstr ""
+
+msgid "Finger movement was too small between the fist and open hand captures."
+msgstr ""
+
+msgid "Battery"
+msgstr ""
+
+msgid "raw"
+msgstr ""
+
+msgid "OptiTrack"
+msgstr ""
+
+msgid "Send gloves to OptiTrack"
+msgstr ""
+
+msgid "OptiTrack connection failed: "
+msgstr ""
+
+msgid "Output minimum (degrees)"
+msgstr ""
+
+msgid "Output maximum (degrees)"
+msgstr ""
+
+msgid "Response balance"
+msgstr ""
+
+msgid "Bone offset (degrees)"
+msgstr ""
+
+msgid "Middle spread uses a constant offset."
+msgstr ""
+
+msgid "0.50 is linear. Settings apply to every output; values beyond the range are extrapolated."
+msgstr ""
+
+msgid "Applied"
+msgstr ""
+
+msgid "Output minimum must not exceed maximum."
+msgstr ""
+
+msgid "Reset this curve"
+msgstr ""
+
+msgid "Response curves"
+msgstr ""
+
+msgid "Local Unity bone axes. VRChat OSC supports only bend and spread; other twist axes require a skeleton output."
+msgstr ""
+
+msgid "Reset all hand adjustments"
+msgstr ""
+
+msgid "Local bone offsets"
+msgstr ""
+
+msgid "Save hand settings"
+msgstr ""
+
+msgid "Thumb yaw"
+msgstr ""
+
+msgid "Thumb roll"
+msgstr ""
+
+msgid "Install SteamVR driver"
+msgstr ""
+
+msgid "Uninstall SteamVR driver"
+msgstr ""
+
+msgid "Refresh"
+msgstr ""
+
+msgid "Checking SteamVR…"
+msgstr ""
+
+msgid "SteamVR was not detected."
+msgstr ""
+
+msgid "SteamVR detected · udcapc driver installed"
+msgstr ""
+
+msgid "SteamVR detected · udcapc driver not installed"
+msgstr ""
+
+msgid "SteamVR detected · this build does not include the udcapc driver"
+msgstr ""
+
+msgid "SteamVR operation failed: "
+msgstr ""
+
+msgid "Done. Restart SteamVR to apply the driver change."
+msgstr ""
+
+msgid "The official udcap driver is also registered. Manage enabled add-ons in SteamVR to avoid duplicate controllers."
+msgstr ""
+
+msgid "Thumb distal bend"
+msgstr ""
+
+msgid "Thumb intermediate bend"
+msgstr ""
+
+msgid "Thumb proximal bend"
+msgstr ""
+
+msgid "Thumb spread"
+msgstr ""
+
+msgid "Index distal bend"
+msgstr ""
+
+msgid "Index intermediate bend"
+msgstr ""
+
+msgid "Index proximal bend"
+msgstr ""
+
+msgid "Index spread"
+msgstr ""
+
+msgid "Middle distal bend"
+msgstr ""
+
+msgid "Middle intermediate bend"
+msgstr ""
+
+msgid "Middle proximal bend"
+msgstr ""
+
+msgid "Middle spread"
+msgstr ""
+
+msgid "Ring distal bend"
+msgstr ""
+
+msgid "Ring intermediate bend"
+msgstr ""
+
+msgid "Ring proximal bend"
+msgstr ""
+
+msgid "Ring spread"
+msgstr ""
+
+msgid "Little distal bend"
+msgstr ""
+
+msgid "Little intermediate bend"
+msgstr ""
+
+msgid "Little proximal bend"
+msgstr ""
+
+msgid "Little spread"
+msgstr ""

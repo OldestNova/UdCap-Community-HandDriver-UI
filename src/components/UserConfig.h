@@ -17,6 +17,7 @@
 #include <fstream>
 #include <mutex>
 #include <filesystem>
+#include <type_traits>
 
 class UserConfig {
 public:
@@ -31,12 +32,16 @@ public:
             return defaultValue;
         }
         if constexpr (std::is_same_v<T, std::string> || std::is_same_v<T, const char*>) {
+            if (!value->IsString()) return defaultValue;
             return value->GetString();
         } else if constexpr (std::is_same_v<T, int>) {
+            if (!value->IsInt()) return defaultValue;
             return value->GetInt();
         } else if constexpr (std::is_same_v<T, bool>) {
+            if (!value->IsBool()) return defaultValue;
             return value->GetBool();
         } else if constexpr (std::is_same_v<T, double>) {
+            if (!value->IsNumber()) return defaultValue;
             return value->GetDouble();
         } else {
             return defaultValue; // Fallback for unsupported types

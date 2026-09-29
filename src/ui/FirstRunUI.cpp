@@ -30,10 +30,9 @@ FirstRunUI::FirstRunUI(std::shared_ptr<bool> resultFlag) {
     infoLabel.set_markup(_("Welcome to use UdCap Community Driver. \n\n"
                           "You can choose to use the <b>simple mode</b> (aka Consumer Driver) or <b>advanced mode</b> (aka Enterprise Driver). \n"
                           "Simple mode is suitable for most users, it automatically find a pair of gloves and connect to them. \n"
-                          "Advanced mode allows you to manually select the gloves and configure them, support multiple gloves and "
-                          "it can pair by yourself. \n"
+                          "Advanced mode pairs matching receiver serials automatically or lets you assign multiple left/right pairs manually. Each pair can have its own VMC output, and one pair can be selected for SteamVR. \n"
                           "Two modes are supported by the same driver, it support consumer glove and enterprise glove in every mode. \nyou can switch between them at any time. \nVMC, VRChat OSC, UdCap's QingTong UDP "
-                          "Broadcast and SteamVR(WIP) available in both modes."));
+                          "Broadcast and SteamVR available in both modes. SteamVR requires the included driver to be registered."));
     infoLabel.set_wrap(true);
     infoLabel.set_justify(Gtk::Justification::LEFT);
     infoLabel.set_halign(Gtk::Align::CENTER);
@@ -48,7 +47,6 @@ FirstRunUI::FirstRunUI(std::shared_ptr<bool> resultFlag) {
     buttonSimple.signal_clicked().connect([this, resultFlag]() {
         UserConfig::getInstance().set<int>("/core/configVersion", 1);
         UserConfig::getInstance().set<int>("/core/driverType", static_cast<int>(UdCapDriverType::UD_CAP_DRIVER_TYPE_CONSUMER));
-        UserConfig::getInstance().set<bool>("/core/shareCalibrateData", false);
         writeDefault();
         UserConfig::getInstance().save();
         *resultFlag = true;
@@ -58,7 +56,6 @@ FirstRunUI::FirstRunUI(std::shared_ptr<bool> resultFlag) {
     buttonAdvanced.signal_clicked().connect([this, resultFlag]() {
         UserConfig::getInstance().set<int>("/core/configVersion",1);
         UserConfig::getInstance().set<int>("/core/driverType", static_cast<int>(UdCapDriverType::UD_CAP_DRIVER_TYPE_ENTERPRISE));
-        UserConfig::getInstance().set<bool>("/core/shareCalibrateData", false);
         writeDefault();
         UserConfig::getInstance().save();
         *resultFlag = true;
